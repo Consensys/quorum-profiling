@@ -27,5 +27,5 @@
  ## how to build and run?
  * build `mvn clean compile assembly:single`
  * This would create  `target/quorum-test-1.0-SNAPSHOT-jar-with-dependencies.jar`
- * run `java quorum-test-1.0-SNAPSHOT-jar-with-dependencies.jar <inputfile>`
+ * run `java -jar quorum-test-1.0-SNAPSHOT-jar-with-dependencies.jar <inputfile>`
  
