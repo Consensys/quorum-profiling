@@ -1,5 +1,5 @@
  ## Introduction
- This program is a testing tool to send value transfer transactions.
+ This java program is a testing tool to test sending value transfer transactions.
  This program does the following:
  * Reads the inputs from a input file
  * For each input (a line in the input file) create a separate thread
