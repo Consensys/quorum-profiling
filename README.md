@@ -31,11 +31,11 @@
  
 ## TEST AUTOMATION - TODO Items
 
-The flow chart is shown below:
+
 ![test flowchart](QuorumTestFlowchart.jpg) 
 
-The architecture is shown below:
-![test architecture](QuorumTestArch.jpg) 
+
+![test architecture](QuorumTestArch.png) 
 
 ## List of tasks
 
