@@ -41,20 +41,19 @@
           -Jurl3=localhost -Jport3=22002 -Jfrom3=0xca40127ac0880f44bca898fd357557b70a2fcc42 -JprivateFor3=\"1iTZde/ndBHvzhcl7V68x44Vx7pl8nwx9LqnM/AfJUg=\"
           -Jurl4=localhost -Jport4=22003 -Jfrom4=0x53a52871988c3b3856280181105d0541d78b38ac -JprivateFor4=\"oNspPPgszVUFw0qmGFfWwh1uxVUXgvBxleXORHj07g8=\"
           -Jthreads=1 -Jseconds=60
-        ```
+      ```
 
-```
-Note: threads$i parameter can also be used to customized the number of threads used for a spefic node - or to disable sending transactions for that particular node
+
+  
+  
+**Note**: `threads$i` parameter can also be used to customized the number of threads used for a spefic node - or to disable sending transactions for that particular node
 
 Example
-
+```
 jmeter -n -t deploy-contract-public-4node.jmx 
     -Jurl1=localhost -Jport1=22000 -Jfrom1=0xed9d02e382b34818e88b88a309c7fe71e65f419d 
     -Jurl2=localhost -Jport2=22001 -Jfrom2=0x4204266650c946a56da82dfded6029cd8b1b54cf
     -Jthreads=1 -Jseconds=60
     -Jthreads3=0 -Jthreads4=0
-
-The command above will start 2 threads to send transactions to node1 and node2 only
-
-    
 ```
+The command above will start 2 threads to send transactions to node1 and node2 only
