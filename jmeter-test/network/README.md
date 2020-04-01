@@ -35,7 +35,7 @@
     
     Sample usage
     ```shell script
-     jmeter -n -t deploy-contract-public-4node.jmx 
+     jmeter -n -t deploy-contract-private-4node.jmx 
           -Jurl1=localhost -Jport1=22000 -Jfrom1=0xed9d02e382b34818e88b88a309c7fe71e65f419d -JprivateFor1=\"BULeR8JyUWhiuuCMU/HLA0Q5pzkYT+cHII3ZKBey3Bo=\"
           -Jurl2=localhost -Jport2=22001 -Jfrom2=0x4204266650c946a56da82dfded6029cd8b1b54cf -JprivateFor2=\"QfeDAys9MPDs2XHExtc84jKGHxZg/aj52DTh0vtA3Xc=\"
           -Jurl3=localhost -Jport3=22002 -Jfrom3=0xca40127ac0880f44bca898fd357557b70a2fcc42 -JprivateFor3=\"1iTZde/ndBHvzhcl7V68x44Vx7pl8nwx9LqnM/AfJUg=\"
