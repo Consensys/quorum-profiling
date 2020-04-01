@@ -34,5 +34,17 @@
     
     Sample usage
     ```shell script
-         jmeter -n -t update-contract-public.jmx -Jurl=localhost -Jport=22000 -Jfrom=0xed9d02e382b34818e88b88a309c7fe71e65f419d -Jthreads=10 -Jseconds=60
+    jmeter -n -t update-contract-public.jmx -Jurl=localhost -Jport=22000 -Jfrom=0xed9d02e382b34818e88b88a309c7fe71e65f419d -Jthreads=10 -Jseconds=60
     ```
+   
+   
+ * `update-contract-private.jmx` fire transactions to update the state of an existing private contract. The test plan will carry out the follow steps:  
+     1. Deploy a new private contract to the network (with the specified `privateFor` key)
+     2. Query the contract address after the contract is mined by calling `eth_getTransactionReceipt` with transaction hash retrieved from response of (i)
+     3. Extract the contract address from response of (ii) and send multiple transactions to the contract deployed with a different randomly generated value.
+     
+     Sample usage
+     ```shell script
+     jmeter -n -t update-contract-private.jmx -Jurl=localhost -Jport=22000 -Jfrom=0xed9d02e382b34818e88b88a309c7fe71e65f419d -JprivateFor=\"ROAZBWtSacxXQrOe3FGAqJDyJjFePR5ce4TSIzmJ0Bc=\" -Jthreads=10 -Jseconds=60
+     ```
+        
