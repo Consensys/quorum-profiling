@@ -1,6 +1,8 @@
  ## Usage
 
- * `deploy-contract-public.jmx` test plan fire transactions to deploy new contracts to the network via `json-rpc` requests. Parameters that can be specified include  
+ * `deploy-contract-public.jmx` test plan fire transactions to deploy new contracts to the network via `json-rpc` requests. The contract being deployed is a `SimpleStorage` contract, with a random value being initialised in the constructor.  
+   
+   Parameters that can be specified include  
      * `url` : The RPC endpoint url  
      * `port` : The RPC endpoint port  
      * `from` : Geth account used to send transactions from  
@@ -8,10 +10,18 @@
      * `seconds` : Duration of the test run in seconds  
      * `delay` : Startup delay (default to 5 seconds)  
         
-    Sample usage
+   Sample usage
     ```shell script
     jmeter -n -t deploy-contract-public.jmx -Jurl=localhost -Jport=22000 -Jfrom=0xed9d02e382b34818e88b88a309c7fe71e65f419d -Jthreads=10 -Jseconds=60
     ```
 
+  
+ * `deploy-contract-private.jmx` test plan similarly fire transactions to deploy new private `SimpleStorage` contracts to the network with a `privateFor` recipient. The contracts are also being initialised with random value.
  
- 
+    Parameters are similar to the above, with an extra variable  
+      * `privateFor` : Public key of the private recipient
+      
+    Sample usage
+    ```shell script
+    jmeter -n -t deploy-contract-private.jmx -Jurl=localhost -Jport=22000 -Jfrom=0xed9d02e382b34818e88b88a309c7fe71e65f419d -JprivateFor=\"ROAZBWtSacxXQrOe3FGAqJDyJjFePR5ce4TSIzmJ0Bc=\" -Jthreads=10 -Jseconds=60
+    ```
