@@ -56,4 +56,45 @@ jmeter -n -t deploy-contract-public-4node.jmx
     -Jthreads=1 -Jseconds=60
     -Jthreads3=0 -Jthreads4=0
 ```
-The command above will start 2 threads to send transactions to node1 and node2 only
+The command above will start 2 threads to send transactions to node1 and node2 only  
+
+
+As there are many properties required, these can also be put into a `properties` file and given to the test execution via command line.  
+
+Example property file `vars.properties`
+
+```shell script
+#Node 1
+from1=0x4204266650c946a56da82dfded6029cd8b1b54cf
+url1=3.10.116.15
+port1=22000
+
+#Node2
+from2=0xca40127ac0880f44bca898fd357557b70a2fcc42
+url2=35.176.231.84
+port2=22001
+
+#Node3
+from3=0x53a52871988c3b3856280181105d0541d78b38ac
+url3=3.9.17.190
+port3=22002
+
+#Node4
+from4=0xa13ced78febcac20a8268b796a9e0208c17d8313
+url4=35.178.199.42
+port4=22003
+
+
+threads=1
+seconds=10
+delay=5
+
+```
+
+Test will then be executed using the following command  
+
+```shell script
+jmeter -n -t deploy-contract-public-4node.jmx -q vars.properties
+```
+
+Note that `-q` option was used to specify additional property file, instead of `-p` which will replace the whole existing default `jmeter.properties` file
