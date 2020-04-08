@@ -34,5 +34,8 @@ __Note__
  * The dataset given in CSV file will be shared across all threads.
     i.e. With the above test execution, thread1 will use the first variables set, thread2 will use the second line, and then recycle until it reaches test duration.
     
- * `deploy-mixed-contract.jmx` has a similar usage however this test plan will deploy a mixed network of both public and private contracts.
+ * `deploy-mixed-contract.jmx` has a similar usage however this test plan will deploy a mixed network of both public and private contracts.  
+ 
+ * `throughput` can be used to throttle the throughput of both types of contracts in mixed public/private contracts scenario. `throughput.public` and `throughput.private` can be used to control number of transactions sent for each type of contract.
+    i.e. If you want to limit the number of public contracts deployed to 100 per second and leave the private transactions being fired as fast as possible you can specify `-Jthroughput.public=6000` (note the unit is per minute)
 
