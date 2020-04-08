@@ -5,3 +5,10 @@
 **/terraform.tfstate*
 **/terraform.tfvars
 .idea
+
+#*
+.#*
+*#
+*~
+.project
+.settings
