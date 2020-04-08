@@ -184,7 +184,7 @@
               </elementProp>
               <elementProp name="throughput" elementType="Argument">
                 <stringProp name="Argument.name">throughput</stringProp>
-                <stringProp name="Argument.value">${__P(throughput,6000000)}</stringProp>
+                <stringProp name="Argument.value">${__P(throughput, 6000000)}</stringProp>
                 <stringProp name="Argument.desc">Desired throughput - per minute</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
