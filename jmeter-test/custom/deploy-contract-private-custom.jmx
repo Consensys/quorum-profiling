@@ -170,6 +170,12 @@
                 <stringProp name="Argument.desc">Variables set from csv file</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
+              <elementProp name="throughput" elementType="Argument">
+                <stringProp name="Argument.name">throughput</stringProp>
+                <stringProp name="Argument.value">${__P(throughput,6000000)}</stringProp>
+                <stringProp name="Argument.desc">Desired throughput</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
             </collectionProp>
           </Arguments>
           <hashTree/>
@@ -211,6 +217,21 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
             <boolProp name="stopThread">false</boolProp>
             <stringProp name="shareMode">shareMode.all</stringProp>
           </CSVDataSet>
+          <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="-1184281156">&quot;error&quot;</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">6</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="true">
+            <stringProp name="throughput">${throughput}</stringProp>
+            <intProp name="calcMode">1</intProp>
+          </ConstantThroughputTimer>
           <hashTree/>
         </hashTree>
       </hashTree>
