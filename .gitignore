@@ -1,0 +1,14 @@
+*.iml
+**/.terraform
+**/terraform.d
+**/build
+**/terraform.tfstate*
+**/terraform.tfvars
+.idea
+
+#*
+.#*
+*#
+*~
+.project
+.settings
