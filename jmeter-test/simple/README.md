@@ -9,6 +9,7 @@
      * `threads` : Number of threads use to send transactions  
      * `seconds` : Duration of the test run in seconds  
      * `delay` : Startup delay (default to 5 seconds)  
+     * `throughput` : (value is transactions **per minute**). Only specify this if you want to throttle the throughput so transactions can be sent slower
         
    Sample usage
     ```shell script

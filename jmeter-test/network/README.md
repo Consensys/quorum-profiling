@@ -6,6 +6,7 @@
      * `threads` : Number of threads per node used to send transactions (i.e. threads=1 means 4 threads to send to 4 nodes)  
      * `seconds` : Duration of the test run in seconds  
      * `delay` : Startup delay (default to 5 seconds)  
+     * `throughput` : (value is transactions **per minute**). Only specify this if you want to throttle the throughput so transactions can be sent slower 
        
    and
    
