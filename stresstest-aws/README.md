@@ -28,6 +28,9 @@ The metric names are self explanatory.
  - `test_profile` = name of the test profile to be executed
  - `no_of_threads` = number of threads per node to be created by jmeter for the specified test profile
  - `duration_of_run` = duration of run for the specified test profile
+ - `throughput` = specifies the number of transactions to be sent to quorum per minute. This is used to throttle the input.
+ - `private.throughput` = specifies the number of private transactions to be sent to quorum per minute. This is used to throttle the input. It is used by custom mixed test profile described below.
+ - `public.throughput` = specifies the number of public transactions to be sent to quorum per minute. This is used to throttle the input. It is used by custom mixed test profile described below.
  #### Sample config:
  ```
 region = "ap-southeast-1"
@@ -49,6 +52,12 @@ region = "ap-southeast-1"
 test_profile = "4node/deploy-contract-public"
 no_of_threads = 1
 duration_of_run = 1200
+#no of transactions to be sent per minute - for 1node and 4node test profiles
+throughput = 96000
+
+#no of transactions to be sent per minute - only applicable for custom mixed contract test profile
+public_throughput = 12000
+private_throughput = 2400
 ```
  ## Test Profiles
  Jmeter is used to run the test profiles. 
@@ -67,14 +76,15 @@ Private transactions have only one participants in `privateFor` by default.
  
  |Profile No | Test profile name | Transaction | Description |
  | --------- | ----------------- | ----------- | ----------- |
- |1| `allnode/deploy-contract-public` | create simpleStorage public contract | creates 1 thread per node  and runs all threads concurrently.  |
- |2| `allnode/deploy-contract-private` | create simpleStorage private contract | Same as profile `1` |
- |3| `1node/deploy-contract-public` | create simpleStorage public contract (with constructor initialised to random number) | creates specified no of threads for first node. sends transactions to first node only. |
- |4| `1node/deploy-contract-private` | create simpleStorage private contract (with constructor initialised to random number) | same as profile `3` |
- |5| `1node/update-contract-public` | update simpleStorage public contract (with setter initialised to random number) | same as profile `3` |
- |6| `1node/update-contract-private` | update simpleStorage private contract (with setter initialised to random number) | same as profile `3` |
- |7| `4node/deploy-contract-public` | create simpleStorage public contract (with constructor - initialised to random number)| creates specified no of threads for each node (first 4 nodes only). sends transactions to first 4 nodes only. |
- |8| `4node/deploy-contract-private` | create simpleStorage private contract (with constructor - initialised to random number)| same as profile `7` |
+ |1| `1node/deploy-contract-public` | create simpleStorage public contract (with constructor initialised to random number) | creates specified no of threads for first node. sends transactions to first node only. |
+ |2| `1node/deploy-contract-private` | create simpleStorage private contract (with constructor initialised to random number) | same as profile `1` |
+ |3| `1node/update-contract-public` | update simpleStorage public contract (with setter initialised to random number) | same as profile `1` |
+ |4| `1node/update-contract-private` | update simpleStorage private contract (with setter initialised to random number) | same as profile `1` |
+ |5| `4node/deploy-contract-public` | create simpleStorage public contract (with constructor - initialised to random number)| creates specified no of threads for each node (first 4 nodes only). sends transactions to first 4 nodes only. |
+ |6| `4node/deploy-contract-private` | create simpleStorage private contract (with constructor - initialised to random number)| same as profile `5` |
+ |7| `custom/deploy-contract-public` | create simpleStorage public contract (with constructor - initialised to random number)| creates specified no of threads and each thread will work on one of the nodes specified in the `.csv` input file. |
+ |8| `custom/deploy-contract-private` | create simpleStorage private contract (with constructor - initialised to random number)| same as profile `7` |
+ |9| `custom/deploy-mixed-contract` | create simpleStorage private & public contract (with constructor - initialised to random number)| creates specified no of thread pairs and each thread pair will work on one of the nodes specified in the `.csv` input file sending private and public transactions concurrently.  |
 
  ## Profiling - Cloudwatch metrics
  It can be viewed under AWS cloudwatch > custom namespaces with namespace `<network_name>-<pulbicIp Of node0>`. 
@@ -103,5 +113,7 @@ Private transactions have only one participants in `privateFor` by default.
  - To start the stress test, update `setting.tfvars` with preferred config.
  Run `terraform apply -var-file settings.tfvars`. 
  - Once testing is done, destroy the environment by running `terraform apply -var-file settings.tfvars`.
+ 
+ NOTE: `terraform-provider-quorum_v0.1.0` plugin is not available in terraform registry yet. You can build it from [here](https://github.com/QuorumEngineering/terraform-provider-quorum) and place under `stresstest-aws/.terraform/plugins/darwin_amd64` 
  
      

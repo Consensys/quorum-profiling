@@ -439,7 +439,7 @@ resource "local_file" "host_acct_csv" {
   content  = <<-EOF
 url,port,from,privateFor
 %{for i in data.null_data_source.meta[*].inputs.idx~}
-${aws_instance.node[i].private_ip},8545,"${quorum_bootstrap_keystore.accountkeys-generator[i].account[0].address}","${quorum_transaction_manager_keypair.tm[(i+1 == length(data.null_data_source.meta) ? 0 : i + 1)].public_key_b64}"
+${aws_instance.node[i].private_ip},8545,${quorum_bootstrap_keystore.accountkeys-generator[i].account[0].address},"${quorum_transaction_manager_keypair.tm[(i+1 == length(data.null_data_source.meta) ? 0 : i + 1)].public_key_b64}"
 %{endfor~}
 EOF
 }
@@ -467,7 +467,7 @@ private.throughput=${var.private_throughput}
 url=${aws_instance.node[0].private_ip}
 port=8545
 from=${quorum_bootstrap_keystore.accountkeys-generator[0].account[0].address}
-privateFor=${quorum_transaction_manager_keypair.tm[1].public_key_b64}
+privateFor="${quorum_transaction_manager_keypair.tm[1].public_key_b64}"
 
 #for multiple nodes
 %{for i in data.null_data_source.meta[*].inputs.idx~}
@@ -475,7 +475,7 @@ privateFor=${quorum_transaction_manager_keypair.tm[1].public_key_b64}
 url${i}=${aws_instance.node[i].private_ip}
 port${i}=8545
 from${i}=${quorum_bootstrap_keystore.accountkeys-generator[i].account[0].address}
-privateFor${i}=${quorum_transaction_manager_keypair.tm[(i+1 == length(data.null_data_source.meta) ? 0 : i + 1)].public_key_b64}
+privateFor${i}="${quorum_transaction_manager_keypair.tm[(i+1 == length(data.null_data_source.meta) ? 0 : i + 1)].public_key_b64}"
 
 %{endfor~}
 
