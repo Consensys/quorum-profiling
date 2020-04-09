@@ -1,5 +1,5 @@
 region = "ap-southeast-1"
-network_name = "aj-dev4-raft-g197"
+network_name = "aj-dev5-raft-g197"
 instance_type = "t2.xlarge"
 num_of_nodes_in_network = 4
 volume_size = 100
@@ -29,12 +29,12 @@ jmeter_docker_image = " amalrajmani/jmeter:5.2.1"
 #test_profile = "4node/deploy-contract-public"
 #test_profile = "4node/deploy-contract-private"
 
-test_profile = "4node/deploy-contract-public"
+test_profile = "custom/deploy-contract-public"
 #deploy simple contract costs about 175000,
 gasLimit = 70000000
 
-no_of_threads = 1
-duration_of_run = 36000
+no_of_threads = 4
+duration_of_run = 600
 
 #no of transactions to be sent per minute - for 1node and 4node test profiles
 throughput = 96000
