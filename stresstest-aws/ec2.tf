@@ -453,6 +453,15 @@ threads=${var.no_of_threads}
 seconds=${var.duration_of_run}
 delay=5
 varsFile=/stresstest/host_acct.csv
+%{if var.throughput > 0~}
+throughput=${var.throughput}
+%{endif~}
+%{if var.public_throughput > 0~}
+public.throughput=${var.public_throughput}
+%{endif~}
+%{if var.private_throughput > 0~}
+private.throughput=${var.private_throughput}
+%{endif~}
 
 #for single node test
 url=${aws_instance.node[0].private_ip}

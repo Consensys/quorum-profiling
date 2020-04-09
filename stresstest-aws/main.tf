@@ -35,6 +35,24 @@ variable "no_of_threads" {
   description = "number of threads to run for each thread group in jmeter test profile"
 }
 
+variable "throughput" {
+  type = number
+  default = 72000
+  description = "no of transactions to be sent per minute. Its used by jmeter to control the no of messages sent to quorum"
+}
+
+variable "public_throughput" {
+  type = number
+  default = 12000
+  description = "no of public transactions to be sent per minute. Its used by jmeter to control the no of messages sent to quorum"
+}
+
+variable "private_throughput" {
+  type = number
+  default = 3000
+  description = "no of private transactions to be sent per minute. Its used by jmeter to control the no of messages sent to quorum"
+}
+
 variable "duration_of_run" {
   type = number
   default = 600
@@ -97,7 +115,7 @@ locals {
   tm_dir_vm_path            = "/data/tm"
   wrk_stresstest_home_path  = "~/stresstest"
   node_monitor_home_path  = "~/monitor"
-  stresstest_src_path        = "stresstest"
+  stresstest_src_path        = "jmeter-test"
   wrk_stresstest_gen_dir      = "${local.generated_dir}/${local.network_name}/stresstest"
   node_dir_prefix           = "node-"
   tm_dir_prefix             = "tm-"

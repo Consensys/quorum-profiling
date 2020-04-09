@@ -99,6 +99,7 @@ Private transactions have only one participants in `privateFor` by default.
   | BlockCount   | total block count |
  
  ## Usage
+ - Run `terraform init` to initialize
  - To start the stress test, update `setting.tfvars` with preferred config.
  Run `terraform apply -var-file settings.tfvars`. 
  - Once testing is done, destroy the environment by running `terraform apply -var-file settings.tfvars`.

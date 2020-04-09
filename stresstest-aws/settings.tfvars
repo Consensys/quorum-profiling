@@ -1,11 +1,13 @@
 region = "ap-southeast-1"
-network_name = "aj-dev3-test"
+network_name = "aj-dev4-test"
 instance_type = "t2.xlarge"
-num_of_nodes_in_network = 7
+num_of_nodes_in_network = 4
 volume_size = 100
 vpc_id = "vpc-a3286ec6"
-gasLimit = 200000000
+
 blockPeriod = 1
+consensus = "ibft"
+
 txpoolSize = 50000
 #quorum_docker_image = "quorumengineering/quorum:2.5.0"
 geth19 = true
@@ -13,7 +15,6 @@ quorum_docker_image = "amalrajmani/quorum-test:v2"
 tessera_docker_image = "quorumengineering/tessera:0.11"
 tps_docker_image = "amalrajmani/tpsmonitor:v7"
 jmeter_docker_image = " amalrajmani/jmeter:5.2.1"
-consensus = "ibft"
 
 // test profile types
 
@@ -29,6 +30,14 @@ consensus = "ibft"
 #test_profile = "4node/deploy-contract-private"
 
 test_profile = "4node/deploy-contract-public"
+gasLimit = 200000000
 
 no_of_threads = 1
 duration_of_run = 36000
+
+#no of transactions to be sent per minute - for 1node and 4node test profiles
+throughput = 72000
+
+#no of transactions to be sent per minute - only applicable for custom test profile
+public_throughput = 12000
+private_throughput = 2400
