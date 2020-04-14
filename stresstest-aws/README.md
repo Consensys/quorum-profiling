@@ -86,7 +86,10 @@ Private transactions have only one participants in `privateFor` by default.
  |8| `custom/deploy-contract-private` | create simpleStorage private contract (with constructor - initialised to random number)| same as profile `7` |
  |9| `custom/deploy-mixed-contract` | create simpleStorage private & public contract (with constructor - initialised to random number)| creates specified no of thread pairs and each thread pair will work on one of the nodes specified in the `.csv` input file sending private and public transactions concurrently.  |
 
- ## Profiling - Cloudwatch metrics
+## Logs
+Logs of `geth`,`tessera`, `jmeter` and `tpsmonitor` processes can be viewed under Cloudwatch Logs > log group > `/quorum/<network_name>`
+
+## Profiling - Cloudwatch metrics
  It can be viewed under AWS cloudwatch > custom namespaces with namespace `<network_name>-<pulbicIp Of node0>`. 
  The metric details are as follows:
  - `system=CpuMemMonitor`

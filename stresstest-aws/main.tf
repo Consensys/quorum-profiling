@@ -201,3 +201,38 @@ output "test" {
   value = aws_instance.wrk.public_dns
 }
 
+output "consensus" {
+  value = var.consensus
+}
+
+output "gaslimit" {
+  value = var.gasLimit
+}
+
+output "blockperiod" {
+  value = var.blockPeriod
+}
+
+output "testprofile" {
+  value = var.test_profile
+}
+
+output "run_duration" {
+  value = var.duration_of_run
+}
+
+output "throughput" {
+  value = var.throughput
+}
+
+output "public_throughput" {
+  value = var.public_throughput
+}
+
+output "private_throughput" {
+  value = var.private_throughput
+}
+
+output "num_of_threads" {
+  value = var.no_of_threads
+}

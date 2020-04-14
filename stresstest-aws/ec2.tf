@@ -509,6 +509,11 @@ resource "null_resource" "wrk_publish" {
 
   triggers = {
     ec2 = aws_instance.wrk.id
+    file1 = local_file.network_props.content
+    file2 = local_file.host_acct_csv.content
+    file3 = local_file.start_jmeter_sh.content
+    file4 = local_file.start_tps_sh.content
+
   }
 
   connection {
