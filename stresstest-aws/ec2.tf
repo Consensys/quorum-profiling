@@ -499,7 +499,7 @@ resource "local_file" "start_jmeter_sh" {
   content  = <<-EOF
 #!/bin/bash
 echo "start jmeter profile ${var.test_profile}.."
-sudo docker run -d -v ${local.wrk_stresstest_home_path}:/stresstest --name jmeter --log-driver=awslogs --log-opt awslogs-region=${var.region} --log-opt awslogs-group=${aws_cloudwatch_log_group.quorum.name} --log-opt awslogs-stream=jmeter    ${var.jmeter_docker_image} -n -t /stresstest/${var.test_profile}.jmx -p /stresstest/network.properties -l /stresstest/result.log -j /stresstest/j.log -e -o /stresstest/tmp/
+sudo docker run -d -v ${local.wrk_stresstest_home_path}:/stresstest --name jmeter --log-driver=awslogs --log-opt awslogs-region=${var.region} --log-opt awslogs-group=${aws_cloudwatch_log_group.quorum.name} --log-opt awslogs-stream=jmeter    ${var.jmeter_docker_image} -n -t /stresstest/${var.test_profile}.jmx -q /stresstest/network.properties -l /stresstest/result.log -j /stresstest/j.log -e -o /stresstest/tmp/
 echo "jmeter test profile ${var.test_profile} started"
 EOF
 }

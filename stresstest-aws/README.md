@@ -112,7 +112,7 @@ Private transactions have only one participants in `privateFor` by default.
  - Run `terraform init` to initialize
  - To start the stress test, update `setting.tfvars` with preferred config.
  Run `terraform apply -var-file settings.tfvars`. 
- - Once testing is done, destroy the environment by running `terraform apply -var-file settings.tfvars`.
+ - Once testing is done, destroy the environment by running `terraform destroy -var-file settings.tfvars`.
  
  NOTE: `terraform-provider-quorum_v0.1.0` plugin is not available in terraform registry yet. You can build it from [here](https://github.com/QuorumEngineering/terraform-provider-quorum) and place under `stresstest-aws/.terraform/plugins/darwin_amd64` 
  
