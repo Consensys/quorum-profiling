@@ -1,13 +1,14 @@
  ## Quorum benchmark tool
  Tool to benchmark Quorum.
- This tool deploys a quorum network (based on inputs from `setting.tfvars` ) in AWS and runs a given jmeter stress test profile automatically.
+ This tool creates a quorum network (based on inputs from `setting.tfvars` ) in AWS and runs a given jmeter stress test profile automatically.
  It profiles CPU & Memory usage of `geth` & `tessera` processes of the first node(`node0`) in the network.
  It also profiles TPS, total transactions count and total block count of the first node(`node0`) in the network.
  These profiles can be viewed under AWS cloudwatch > custom namespaces with namespace `<network_name>-<pulbicIp Of node0>`. 
 The metric names are self explanatory.
- It creates number of nodes specified in the config and an additional node(for running jmeter test and tps monitor).
+ It creates the network specified in the config and an additional test node(for running jmeter test and tps monitor).
  The logs of `geth`, `tessera`, `jmeter` and `tpsmonitor` can be viewed under cloudwatch > Log groups > `/quorum/<network_name>`
  
+ ![architecture](StressTestArch.jpg) 
  
  ## Configuration details (settings.tfvars)
  - `region` = aws region
@@ -28,9 +29,9 @@ The metric names are self explanatory.
  - `test_profile` = name of the test profile to be executed
  - `no_of_threads` = number of threads per node to be created by jmeter for the specified test profile
  - `duration_of_run` = duration of run for the specified test profile
- - `throughput` = specifies the number of transactions to be sent to quorum per minute. This is used to throttle the input.
- - `private.throughput` = specifies the number of private transactions to be sent to quorum per minute. This is used to throttle the input. It is used by custom mixed test profile described below.
- - `public.throughput` = specifies the number of public transactions to be sent to quorum per minute. This is used to throttle the input. It is used by custom mixed test profile described below.
+ - `throughput` = specifies the number of transactions to be sent to quorum per minute by jmeter. This is used to throttle the input. It is used by `1node` and `4node` test profiles.
+ - `private.throughput` = specifies the number of private transactions to be sent to quorum per minute by jmeter. This is used to throttle the input. It is used by `custom/mixed` test profile described below.
+ - `public.throughput` = specifies the number of public transactions to be sent to quorum per minute by jmeter. This is used to throttle the input. It is used by `custom/mixed` test profile described below.
  #### Sample config:
  ```
 region = "ap-southeast-1"
