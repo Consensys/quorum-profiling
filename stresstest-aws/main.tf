@@ -20,6 +20,15 @@ variable "region" {
 
 }
 
+variable "aws_profile" {
+  description = "aws profile name to be used in case of multiple profiles"
+  default = "default"
+}
+
+variable "aws_user" {
+  description = "name of aws user. this is used in generating description"
+  default = ""
+}
 variable "consensus" {
   description = "name of consensus supported by quorum. should be raft or ibft"
   default = "raft"

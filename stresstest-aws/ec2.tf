@@ -1,5 +1,6 @@
 provider "aws" {
   region = var.region
+  profile = var.aws_profile
 }
 
 data "aws_ami" "this" {
@@ -62,14 +63,14 @@ data "http" "myIpAddr" {
 
 resource "aws_security_group" "external" {
   name        = format("%s-external", local.network_name)
-  description = "Allow external traffic"
+  description = format("Reason: Allow external traffic by: %s", var.aws_user)
   vpc_id      = var.vpc_id
 
   ingress {
     from_port = 22
     protocol  = "tcp"
     to_port   = 22
-
+    description = format("Reason: Allow ssh from myIp by: %s", var.aws_user)
     cidr_blocks = [
       "${chomp(data.http.myIpAddr.body)}/32"
     ]
@@ -79,7 +80,7 @@ resource "aws_security_group" "external" {
     from_port = local.host_rpc_port
     protocol  = "tcp"
     to_port   = local.host_rpc_port
-
+    description = format("Reason: Allow access to geth rpc from myIP by: %s", var.aws_user)
     cidr_blocks = [
       "${chomp(data.http.myIpAddr.body)}/32"
     ]
@@ -89,7 +90,7 @@ resource "aws_security_group" "external" {
     from_port = local.host_ws_port
     protocol  = "tcp"
     to_port   = local.host_ws_port
-
+    description = format("Reason: Allow access to geth ws from myIP by: %s", var.aws_user)
     cidr_blocks = [
       "${chomp(data.http.myIpAddr.body)}/32"
     ]
@@ -103,7 +104,7 @@ resource "aws_security_group" "external" {
 
 resource "aws_security_group" "quorum" {
   name        = format("%s-internal", local.network_name)
-  description = "Allow Quorum Network traffic"
+  description = format("Reason: Allow Quorum Network traffic by: %s", var.aws_user)
   vpc_id      = var.vpc_id
 
   ingress {
@@ -111,12 +112,14 @@ resource "aws_security_group" "quorum" {
     to_port   = 0
     protocol  = "-1"
     self      = true
+    description = format("Reason: Allow Quorum Network traffic by: %s", var.aws_user)
   }
 
   egress {
     from_port = 0
     to_port   = 0
     protocol  = "-1"
+    description = format("Reason: Allow Quorum Network traffic by: %s", var.aws_user)
     cidr_blocks = [
       "0.0.0.0/0"
     ]
