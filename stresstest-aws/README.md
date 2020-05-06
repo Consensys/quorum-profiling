@@ -131,7 +131,9 @@ You can view TPS graph from http endpoint `http://<test-node>:7575/tpschart?iw=1
  ![Sample TPSChart](TPSChart.jpeg)  
  
  ## Usage
- - `cd stresstest-aws`
+ - `git clone https://github.com/QuorumEngineering/quorum-test.git`
+ - `cd quorum-test/stresstest-aws`
+ - edit `settings.tfvars` and configure parameters for stress test
  - Run `terraform init` to initialize
  - To start the stress test, update `setting.tfvars` with preferred config.
  Run `terraform apply -var-file settings.tfvars`. 
