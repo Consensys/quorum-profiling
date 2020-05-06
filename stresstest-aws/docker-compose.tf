@@ -15,7 +15,7 @@ x-quorum-def:
   logging:
     driver: "awslogs"
     options:
-      awslogs-region: "${var.region}"
+      awslogs-region: "${var.aws_region}"
       awslogs-group: "${aws_cloudwatch_log_group.quorum.name}"
       awslogs-stream: "${format("node-%d", count.index)}"
   entrypoint:
@@ -84,7 +84,7 @@ x-tx-manager-def:
   logging:
     driver: "awslogs"
     options:
-      awslogs-region: "${var.region}"
+      awslogs-region: "${var.aws_region}"
       awslogs-group: "${aws_cloudwatch_log_group.quorum.name}"
       awslogs-stream: "${format("tm-%d", count.index)}"
   entrypoint:

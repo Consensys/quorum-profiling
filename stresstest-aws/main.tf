@@ -1,22 +1,22 @@
-variable "network_name" {
+variable "aws_network_name" {
   default = "amal-test"
 }
 
-variable "instance_type" {
+variable "aws_instance_type" {
   default = "t2.xlarge"
 }
 
-variable "volume_size" {
+variable "aws_volume_size" {
   type = number
   default = 100
   description = "volume size of each geth node"
 }
 
-variable "vpc_id" {
+variable "aws_vpc_id" {
 
 }
 
-variable "region" {
+variable "aws_region" {
 
 }
 
@@ -34,35 +34,35 @@ variable "consensus" {
   default = "raft"
 }
 
-variable "test_profile" {
-  default = "public-deploy-contract-all-nodes"
+variable "jmeter_test_profile" {
+  default = "4node/deploy-contract-public"
 }
 
-variable "no_of_threads" {
+variable "jmeter_no_of_threads" {
   type = number
   default = 1
   description = "number of threads to run for each thread group in jmeter test profile"
 }
 
-variable "throughput" {
+variable "jmeter_throughput" {
   type = number
   default = 72000
   description = "no of transactions to be sent per minute. Its used by jmeter to control the no of messages sent to quorum"
 }
 
-variable "public_throughput" {
+variable "jmeter_public_throughput" {
   type = number
   default = 12000
   description = "no of public transactions to be sent per minute. Its used by jmeter to control the no of messages sent to quorum"
 }
 
-variable "private_throughput" {
+variable "jmeter_private_throughput" {
   type = number
   default = 3000
   description = "no of private transactions to be sent per minute. Its used by jmeter to control the no of messages sent to quorum"
 }
 
-variable "duration_of_run" {
+variable "jmeter_duration_of_run" {
   type = number
   default = 600
   description = "duration of test run"
@@ -105,7 +105,7 @@ variable "txpoolSize" {
   default = 50000
 }
 
-variable "num_of_nodes_in_network" {
+variable "aws_num_of_nodes_in_network" {
   type = number
   default = 4
   description = "number of nodes in the network"
@@ -114,7 +114,7 @@ variable "num_of_nodes_in_network" {
 
 
 locals {
-  network_name              = var.network_name == "" ? basename(abspath(path.module)) : var.network_name
+  network_name              = var.aws_network_name == "" ? basename(abspath(path.module)) : var.aws_network_name
   generated_dir             = "build"
   tmkeys_generated_dir      = "${local.generated_dir}/${local.network_name}/tmkeys"
   accountkeys_generated_dir = "${local.generated_dir}/${local.network_name}/accountkeys"
@@ -129,7 +129,7 @@ locals {
   node_dir_prefix           = "node-"
   tm_dir_prefix             = "tm-"
   geth_addt_args            = ( var.geth19 ? "--allow-insecure-unlock" : "")
-  number_of_nodes           = var.num_of_nodes_in_network
+  number_of_nodes           = var.aws_num_of_nodes_in_network
   quorum_docker_image       = var.quorum_docker_image
   tessera_docker_image      = var.tessera_docker_image
   tmNamedKeyAllocation = [for k in data.null_data_source.node_mapping[*].inputs: [format("A%d",k.idx)] ]
@@ -145,6 +145,7 @@ locals {
   host_raft_port                = 50400
   host_p2p_port                 = 21000
   host_rpc_port                 = 8545
+  host_tps_port                 = 7575
   host_ws_port                  = 8546
   host_tm_p2p_port              = 9000
   host_tm_third_party_port      = 9080
@@ -157,7 +158,7 @@ resource "random_integer" "additional_bits" {
 }
 
 data "null_data_source" "node_mapping" {
-  count = var.num_of_nodes_in_network
+  count = var.aws_num_of_nodes_in_network
   inputs = {
     idx = count.index
   }
@@ -223,25 +224,25 @@ output "blockperiod" {
 }
 
 output "testprofile" {
-  value = var.test_profile
+  value = var.jmeter_test_profile
 }
 
 output "run_duration" {
-  value = var.duration_of_run
+  value = var.jmeter_duration_of_run
 }
 
 output "throughput" {
-  value = var.throughput
+  value = var.jmeter_throughput
 }
 
 output "public_throughput" {
-  value = var.public_throughput
+  value = var.jmeter_public_throughput
 }
 
 output "private_throughput" {
-  value = var.private_throughput
+  value = var.jmeter_private_throughput
 }
 
 output "num_of_threads" {
-  value = var.no_of_threads
+  value = var.jmeter_no_of_threads
 }

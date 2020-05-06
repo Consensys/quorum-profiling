@@ -1,5 +1,5 @@
 provider "aws" {
-  region = var.region
+  region = var.aws_region
   profile = var.aws_profile
 }
 
@@ -64,7 +64,7 @@ data "http" "myIpAddr" {
 resource "aws_security_group" "external" {
   name        = format("%s-external", local.network_name)
   description = format("Reason: Allow external traffic by: %s", var.aws_user)
-  vpc_id      = var.vpc_id
+  vpc_id      = var.aws_vpc_id
 
   ingress {
     from_port = 22
@@ -96,6 +96,16 @@ resource "aws_security_group" "external" {
     ]
   }
 
+  ingress {
+    from_port = local.host_tps_port
+    protocol  = "tcp"
+    to_port   = local.host_tps_port
+    description = format("Reason: Allow access to tps data and graph from myIP by: %s", var.aws_user)
+    cidr_blocks = [
+      "${chomp(data.http.myIpAddr.body)}/32"
+    ]
+  }
+
   tags = {
     Name = local.network_name
     By   = "quorum"
@@ -105,7 +115,7 @@ resource "aws_security_group" "external" {
 resource "aws_security_group" "quorum" {
   name        = format("%s-internal", local.network_name)
   description = format("Reason: Allow Quorum Network traffic by: %s", var.aws_user)
-  vpc_id      = var.vpc_id
+  vpc_id      = var.aws_vpc_id
 
   ingress {
     from_port = 0
@@ -132,14 +142,14 @@ resource "aws_security_group" "quorum" {
 }
 
 data "aws_subnet_ids" "node" {
-  vpc_id = var.vpc_id
+  vpc_id = var.aws_vpc_id
 }
 
 resource "aws_instance" "node" {
   count = local.number_of_nodes
 
   ami                         = data.aws_ami.this.id
-  instance_type               = var.instance_type
+  instance_type               = var.aws_instance_type
   associate_public_ip_address = true
   key_name                    = aws_key_pair.ssh.key_name
   subnet_id                   = element(tolist(data.aws_subnet_ids.node.ids), 0)
@@ -151,7 +161,7 @@ resource "aws_instance" "node" {
   ]
 
   root_block_device {
-    volume_size = var.volume_size
+    volume_size = var.aws_volume_size
   }
 
   user_data = <<EOF
@@ -235,7 +245,7 @@ EOF
 
 resource "aws_instance" "wrk" {
   ami                         = data.aws_ami.this.id
-  instance_type               = var.instance_type
+  instance_type               = var.aws_instance_type
   associate_public_ip_address = true
   key_name                    = aws_key_pair.ssh.key_name
   subnet_id                   = element(tolist(data.aws_subnet_ids.node.ids), 0)
@@ -346,8 +356,8 @@ resource "local_file" "node_monitor_sh" {
   filename = format("%s/start-monitor.sh", local.generated_dir)
   content  = <<-EOF
 #!/bin/bash
-region="${var.region}"
-nprefix="${var.network_name}"
+region="${var.aws_region}"
+nprefix="${var.aws_network_name}"
 ts=`date +"%d%m%Y%H%M%S"`
 lf="node_monitor_$ts.log"
 while true
@@ -452,18 +462,18 @@ resource "local_file" "network_props" {
   filename = format("%s/network.properties", local.wrk_stresstest_gen_dir)
   content  = <<-EOF
 #common params
-threads=${var.no_of_threads}
-seconds=${var.duration_of_run}
+threads=${var.jmeter_no_of_threads}
+seconds=${var.jmeter_duration_of_run}
 delay=5
 varsFile=/stresstest/host_acct.csv
-%{if var.throughput > 0~}
-throughput=${var.throughput}
+%{if var.jmeter_throughput > 0~}
+throughput=${var.jmeter_throughput}
 %{endif~}
-%{if var.public_throughput > 0~}
-public.throughput=${var.public_throughput}
+%{if var.jmeter_public_throughput > 0~}
+public.throughput=${var.jmeter_public_throughput}
 %{endif~}
-%{if var.private_throughput > 0~}
-private.throughput=${var.private_throughput}
+%{if var.jmeter_private_throughput > 0~}
+private.throughput=${var.jmeter_private_throughput}
 %{endif~}
 
 #for single node test
@@ -492,7 +502,7 @@ resource "local_file" "start_tps_sh" {
   content  = <<-EOF
 #!/bin/bash
 echo "start tps monitor..."
-sudo docker run -d -v ${local.wrk_stresstest_home_path}:/stresstest -p 7575:7575 --name tps-monitor --log-driver=awslogs --log-opt awslogs-region=${var.region} --log-opt awslogs-group=${aws_cloudwatch_log_group.quorum.name} --log-opt awslogs-stream=tpsmonitor ${var.tps_docker_image} --awsmetrics --awsregion ${var.region} --awsnetwork ${var.network_name} --awsinst ${aws_instance.node[0].public_ip} --wsendpoint ws://${aws_instance.node[0].private_ip}:8546 --consensus=${var.consensus} --report /stresstest/tps-report.csv
+sudo docker run -d -v ${local.wrk_stresstest_home_path}:/stresstest -p 7575:7575 --name tps-monitor --log-driver=awslogs --log-opt awslogs-region=${var.aws_region} --log-opt awslogs-group=${aws_cloudwatch_log_group.quorum.name} --log-opt awslogs-stream=tpsmonitor ${var.tps_docker_image} --awsmetrics --awsregion ${var.aws_region} --awsnetwork ${var.aws_network_name} --awsinst ${aws_instance.node[0].public_ip} --wsendpoint ws://${aws_instance.node[0].private_ip}:8546 --consensus=${var.consensus} --report /stresstest/tps-report.csv
 echo "tps monitor started"
 EOF
 }
@@ -501,9 +511,9 @@ resource "local_file" "start_jmeter_sh" {
   filename = format("%s/start-jmeter-test.sh", local.wrk_stresstest_gen_dir)
   content  = <<-EOF
 #!/bin/bash
-echo "start jmeter profile ${var.test_profile}.."
-sudo docker run -d -v ${local.wrk_stresstest_home_path}:/stresstest --name jmeter --log-driver=awslogs --log-opt awslogs-region=${var.region} --log-opt awslogs-group=${aws_cloudwatch_log_group.quorum.name} --log-opt awslogs-stream=jmeter    ${var.jmeter_docker_image} -n -t /stresstest/${var.test_profile}.jmx -q /stresstest/network.properties -l /stresstest/result.log -j /stresstest/j.log -e -o /stresstest/tmp/
-echo "jmeter test profile ${var.test_profile} started"
+echo "start jmeter profile ${var.jmeter_test_profile}.."
+sudo docker run -d -v ${local.wrk_stresstest_home_path}:/stresstest --name jmeter --log-driver=awslogs --log-opt awslogs-region=${var.aws_region} --log-opt awslogs-group=${aws_cloudwatch_log_group.quorum.name} --log-opt awslogs-stream=jmeter    ${var.jmeter_docker_image} -n -t /stresstest/${var.jmeter_test_profile}.jmx -q /stresstest/network.properties -l /stresstest/result.log -j /stresstest/j.log -e -o /stresstest/tmp/
+echo "jmeter test profile ${var.jmeter_test_profile} started"
 EOF
 }
 
