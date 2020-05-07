@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func TestSimpleComparisonChart(t *testing.T){
+func TestSimpleComparisonChart(t *testing.T) {
 
 	p, err := plot.New()
 	if err != nil {
@@ -23,17 +23,16 @@ func TestSimpleComparisonChart(t *testing.T){
 	var nomX1 []string
 
 	var trs = []TPSRecord{
-		{"1-Jan 14:01","00:00:01",200, 100, 200},
-		{"1-Jan 14:02","00:00:02",500, 300, 6000},
-		{"1-Jan 14:03","00:00:03",600, 400, 800},
-		{"1-Jan 14:04","00:00:04",400, 450, 9000},
-		{"1-Jan 14:05","00:00:05",300, 600, 10000},
+		{"1-Jan 14:01", "00:00:01", 200, 100, 200},
+		{"1-Jan 14:02", "00:00:02", 500, 300, 6000},
+		{"1-Jan 14:03", "00:00:03", 600, 400, 800},
+		{"1-Jan 14:04", "00:00:04", 400, 450, 9000},
+		{"1-Jan 14:05", "00:00:05", 300, 600, 10000},
 	}
 
 	var trs1 = []TPSRecord{
-		{"1-Jan 14:01","00:00:01",300, 100, 200},
-		{"1-Jan 14:02","00:00:02",570, 300, 6000},
-
+		{"1-Jan 14:01", "00:00:01", 300, 100, 200},
+		{"1-Jan 14:02", "00:00:02", 570, 300, 6000},
 	}
 
 	pts := make(plotter.XYs, len(trs))
@@ -70,14 +69,14 @@ func TestSimpleComparisonChart(t *testing.T){
 	}
 	p.NominalX(nomX...)
 	// Save the plot to a PNG file.
-	if err := p.Save(10*vg.Inch, 10*vg.Inch, "/Users/amalraj.manigmail.com/Downloads/tps.png"); err != nil {
+	if err := p.Save(10*vg.Inch, 10*vg.Inch, "/tmp/tps.png"); err != nil {
 		panic(err)
 	}
 
 }
-func TestSimpleComparisonChart1(t *testing.T){
-	pts1 := randomPoints(25*60)
-	pts2 := randomPoints(25*60)
+func TestSimpleComparisonChart1(t *testing.T) {
+	pts1 := randomPoints(25 * 60)
+	pts2 := randomPoints(25 * 60)
 
 	t1 := time.Now()
 	p, err := plot.New()
@@ -94,7 +93,7 @@ func TestSimpleComparisonChart1(t *testing.T){
 		X += 1.0
 		lbl := ""
 		if i%100 == 0 {
-			lbl = "X"+strconv.Itoa(i)
+			lbl = "X" + strconv.Itoa(i)
 		}
 		nomX = append(nomX, lbl)
 	}
@@ -131,10 +130,9 @@ func TestSimpleComparisonChart1(t *testing.T){
 	p.Legend.Add("quorum 2.4.0", l1)
 	p.Legend.Add("quorum 1.9.7", l2)
 
-
 	p.NominalX(nomX...)
 	// Save the plot to a PNG file.
-	if err := p.Save(10*vg.Inch, 5*vg.Inch, "/Users/amalraj.manigmail.com/Downloads/tps2.png"); err != nil {
+	if err := p.Save(10*vg.Inch, 5*vg.Inch, "/tmp/tps2.png"); err != nil {
 		panic(err)
 	}
 
@@ -142,7 +140,6 @@ func TestSimpleComparisonChart1(t *testing.T){
 	t.Logf("time taken: %d\n", t2)
 
 }
-
 
 // randomPoints returns some random x, y points.
 func randomPoints(n int) plotter.XYs {

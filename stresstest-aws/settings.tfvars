@@ -2,7 +2,7 @@ aws_region = "ap-southeast-1"
 aws_profile = "amal-sbox"
 #aws_profile = "default"
 aws_user = "l1-developers/f050437"
-aws_network_name = "run2-raft-q260"
+aws_network_name = "run5-raft-q260"
 // aws instance type
 aws_instance_type = "t2.xlarge"
 aws_num_of_nodes_in_network = 4
@@ -23,7 +23,7 @@ quorum_docker_image = "quorumengineering/quorum:2.6.0"
 // docker image of tessera
 tessera_docker_image = "quorumengineering/tessera:0.11"
 
-tps_docker_image = "amalrajmani/tpsmonitor:v7"
+tps_docker_image = "amalrajmani/tpsmonitor:v1"
 jmeter_docker_image = "amalrajmani/jmeter:5.2.1"
 
 // jmeter test profile type you want to run

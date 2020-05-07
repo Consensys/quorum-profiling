@@ -14,10 +14,13 @@ You can install it using your favourite package manager. Once the dependencies a
 
 ## Running `tpsmonitor`
 
+#### Usage
+Run `tpsmonitor --help` to see usage.
+
 WS API must be enabled in `geth` to run tpsmonitor. Default port of HTTP endpoint is `7575`
 
 #### calculate TPS on new blocks
-Displays TPS calculated in the console for new blocks as they are inserted to the chain. Calculates TPS, total no of blocks and total no of transactions for every minute and saves these results to the report file.
+Displays TPS calculated in the console for new blocks as they are inserted to the chain. Calculates TPS, total no of blocks and total no of transactions for every second and saves these results to the report file.
 
 ```tpsmonitor --wsendpoint <ws address> --consensus [raft|ibft] --report <report name>```
 Example: `tpsmonitor --wsendpoint ws://52.77.226.85:23000/ --consensus raft --report tps-m.csv --port <port no>`
@@ -29,11 +32,11 @@ head -20 tps-m.csv
 ```
 ````
 localTime,refTime,TPS,TxnCount,BlockCount
-Mar-23 06:03,00:00:01,2134,128047,241
-Mar-23 06:04,00:00:02,2023,242871,479
-Mar-23 06:05,00:00:03,1958,352613,713
-Mar-23 06:06,00:00:04,1906,457647,937
-Mar-23 06:07,00:00:05,1880,564064,1163
+Mar-23 06:03:01,00:00:00:01,2134,128047,241
+Mar-23 06:03:02,00:00:00:02,2023,242871,479
+Mar-23 06:03:03,00:00:00:03,1958,352613,713
+Mar-23 06:03:04,00:00:00:04,1906,457647,937
+Mar-23 06:03:05,00:00:00:05,1880,564064,1163
 ````
 #### calculate TPS for a given range of blocks
 Displays TPS calculated in the console for given range of blocks as they are read from the chain. Calculates TPS, total no of blocks and total no of transactions for every minute(for the given block range) and saves these results to the report file.
@@ -52,13 +55,9 @@ http://localhost:8888/tpsdata
 
 ````
 localTime,refTime,TPS,TxnCount,BlockCount
-Mar-23 06:03,00:00:01,2134,128047,241
-Mar-23 06:04,00:00:02,2023,242871,479
-Mar-23 06:05,00:00:03,1958,352613,713
-Mar-23 06:06,00:00:04,1906,457647,937
-Mar-23 06:07,00:00:05,1880,564064,1163
-Mar-23 06:08,00:00:06,1842,663288,1385
-Mar-23 06:09,00:00:07,1815,762463,1611
-Mar-23 06:10,00:00:08,1798,863349,1832
-Mar-23 06:11,00:00:09,1780,961296,2051
+Mar-23 06:03:01,00:00:00:01,2134,128047,241
+Mar-23 06:03:02,00:00:00:02,2023,242871,479
+Mar-23 06:03:03,00:00:00:03,1958,352613,713
+Mar-23 06:03:04,00:00:00:04,1906,457647,937
+Mar-23 06:03:05,00:00:00:05,1880,564064,1163
 ````

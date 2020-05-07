@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// wrapper for aws cloudwatch to publish metrics
 type AwsCloudwatchService struct {
 	region   string
 	nwName   string

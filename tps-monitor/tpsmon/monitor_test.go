@@ -20,6 +20,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// create new dummy transaction
 func getNewTxn() *types.Transaction {
 	emptyTx := types.NewTransaction(
 		0,
@@ -30,6 +31,7 @@ func getNewTxn() *types.Transaction {
 	return emptyTx
 }
 
+// create new dummy block header
 func getNewHeader(n int64, isRaft bool, t1 time.Time) *types.Header {
 	fakeParentHash := common.HexToHash("0xc2c1dc1be8054808c69e06137429899d")
 
@@ -51,6 +53,7 @@ func getNewHeader(n int64, isRaft bool, t1 time.Time) *types.Header {
 	return header
 }
 
+// create a new list of dummy transactions
 func txnsList(n int) []*types.Transaction {
 	i := 0
 	var txns []*types.Transaction
@@ -61,6 +64,7 @@ func txnsList(n int) []*types.Transaction {
 	return txns
 }
 
+// create new dummy block
 func getNewBlock(h *types.Header, txns []*types.Transaction) *types.Block {
 	return types.NewBlock(h, txns, nil, nil)
 }
@@ -93,7 +97,7 @@ func testTPS(isRaft bool, t *testing.T) {
 		t1 = time.Unix(time.Now().Unix(), 0)
 	}
 	for c = 1; c <= 20; c++ {
-		t2 = t1.Add(time.Minute).Add(time.Second)
+		t2 = t1.Add(time.Second) //.Add(time.Second)
 		blksArr = append(blksArr, getNewBlock(getNewHeader(int64(c), isRaft, t1), txnsList(c*1000)))
 		t1 = t2
 	}
@@ -106,7 +110,7 @@ func testTPS(isRaft bool, t *testing.T) {
 	tm.printTPS()
 	var expTxnCnt uint64 = 190000
 	var expBlkCnt uint64 = 19
-	var expTps uint32 = 166
+	var expTps uint32 = 10000
 	expTpsRecs := 19
 
 	lr := len(tm.tpsRecs)

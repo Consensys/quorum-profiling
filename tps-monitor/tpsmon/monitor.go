@@ -53,7 +53,7 @@ type TPSMonitor struct {
 
 // Date format to show only hour and minute
 const (
-	dateFmtMin = "Jan-02 15:04"
+	dateFmtMinSec = "Jan-02 15:04:05"
 )
 
 func NewTPSMonitor(awsCfg *AwsCloudwatchService, isRaft bool, report string, frmBlk uint64, toBlk uint64, sub ethereum.Subscription, headers chan *types.Header, client *ethclient.Client) *TPSMonitor {
@@ -125,60 +125,66 @@ func (tm *TPSMonitor) init() {
 
 // read data from block and calculated TPS
 func (tm *TPSMonitor) readBlock(block *types.Block) {
-
 	var blkTime time.Time
-	if tm.isRaft {
-		r := block.Time() % 1e9
-		blkTime = time.Unix(int64(block.Time()/1e9), int64(r))
+	var tps uint64
+	var nilBlk = false
+	// triggered by ticker to generate periodic TPS
+	if block == nil {
+		blkTime = time.Now()
+		nilBlk = true
 	} else {
-		blkTime = time.Unix(int64(block.Time()), 0)
+		if tm.isRaft {
+			r := block.Time() % 1e9
+			blkTime = time.Unix(int64(block.Time()/1e9), int64(r))
+		} else {
+			blkTime = time.Unix(int64(block.Time()), 0)
+		}
 	}
 
 	if tm.firstBlkTime != nil {
 		totSecs := blkTime.Sub(*tm.firstBlkTime).Milliseconds() / 1000
+		log.Printf("total secs:%v total tx:%v\n", totSecs, tm.txnsCnt)
 		if totSecs > 0 {
-			tps := tm.txnsCnt / uint64(totSecs)
+			tps = tm.txnsCnt / uint64(totSecs)
 			log.Printf("TPS:%v txnsCnt:%v blkCnt:%v\n", tps, tm.txnsCnt, tm.blkCnt)
 		}
 	}
 
 	if tm.firstBlkTime == nil {
 		tm.firstBlkTime = &blkTime
-		tm.refTimeNext = tm.refTimeNext.Add(time.Minute)
-		tm.blkTimeNext = blkTime.Add(time.Minute)
+		tm.refTimeNext = tm.refTimeNext.Add(time.Second)
+		tm.blkTimeNext = blkTime.Add(time.Second)
 	}
 
-	txns := len(block.Transactions())
+	// report tps to file and aws clould watch every second
+	if blkTime.After(tm.blkTimeNext) || blkTime.Equal(tm.blkTimeNext) {
+		ltime := tm.blkTimeNext.Format(dateFmtMinSec)
+		yd := tm.refTimeNext.YearDay() - 1
+		hh := tm.refTimeNext.Hour()
+		mm := tm.refTimeNext.Minute()
+		ss := tm.refTimeNext.Second()
+		rtime := fmt.Sprintf("%02d:%02d:%02d:%02d", yd, hh, mm, ss)
 
-	if blkTime.After(tm.blkTimeNext) {
-
-		// this loop fills tps for missing time points when block mining is delayed beyond 1minute
-		for blkTime.After(tm.blkTimeNext) {
-			ltime := tm.blkTimeNext.Format(dateFmtMin)
-			yd := tm.refTimeNext.YearDay() - 1
-			hh := tm.refTimeNext.Hour()
-			mm := tm.refTimeNext.Minute()
-			rtime := fmt.Sprintf("%02d:%02d:%02d", yd, hh, mm)
-			totSecs := tm.refTimeNext.Sub(tm.refTime).Milliseconds() / 1000
-			tps := tm.txnsCnt / uint64(totSecs)
-			tr := TPSRecord{rtime: rtime, ltime: ltime, tps: uint32(tps), blks: tm.blkCnt, txns: tm.txnsCnt}
-			log.Print(tr.String() + "\n")
-			if tm.rptFile != nil {
-				if _, err := tm.rptFile.WriteString(tr.ReportString()); err != nil {
-					log.Printf("ERROR: writing to report failed %v", err)
-				}
-				tm.rptFile.Sync()
+		tr := TPSRecord{rtime: rtime, ltime: ltime, tps: uint32(tps), blks: tm.blkCnt, txns: tm.txnsCnt}
+		log.Print(tr.String() + "\n")
+		if tm.rptFile != nil {
+			if _, err := tm.rptFile.WriteString(tr.ReportString()); err != nil {
+				log.Printf("ERROR: writing to report failed %v", err)
 			}
-			tm.tpsRecs = append(tm.tpsRecs, tr)
-			//publish metrics to aws cloudwatch
-			go tm.putMetricsInAws(tm.blkTimeNext, fmt.Sprintf("%v", tps), fmt.Sprintf("%v", tm.txnsCnt), fmt.Sprintf("%v", tm.blkCnt))
-			tm.refTimeNext = tm.refTimeNext.Add(time.Minute)
-			tm.blkTimeNext = tm.blkTimeNext.Add(time.Minute)
+			tm.rptFile.Sync()
 		}
+		tm.tpsRecs = append(tm.tpsRecs, tr)
+		//publish metrics to aws cloudwatch
+		go tm.putMetricsInAws(tm.blkTimeNext, fmt.Sprintf("%v", tps), fmt.Sprintf("%v", tm.txnsCnt), fmt.Sprintf("%v", tm.blkCnt))
+		tm.refTimeNext = tm.refTimeNext.Add(time.Second)
+		tm.blkTimeNext = tm.blkTimeNext.Add(time.Second)
 	}
 
-	tm.blkCnt++
-	tm.txnsCnt += uint64(txns)
+	if !nilBlk {
+		txns := len(block.Transactions())
+		tm.blkCnt++
+		tm.txnsCnt += uint64(txns)
+	}
 }
 
 func (tm *TPSMonitor) putMetricsInAws(lt time.Time, tps string, txnCnt string, blkCnt string) {
@@ -191,6 +197,8 @@ func (tm *TPSMonitor) putMetricsInAws(lt time.Time, tps string, txnCnt string, b
 
 // calculates TPS for new block added to the chain
 func (tm *TPSMonitor) calcTpsFromNewBlocks() {
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
 	for {
 		select {
 		case err := <-tm.sub.Err():
@@ -201,7 +209,9 @@ func (tm *TPSMonitor) calcTpsFromNewBlocks() {
 				log.Fatal(err)
 			}
 			tm.readBlock(block)
-
+		case <-ticker.C:
+			log.Print("ticker ticked")
+			tm.readBlock(nil)
 		case <-tm.stopc:
 			log.Print("tps monitor stopped - exit loop")
 			return
