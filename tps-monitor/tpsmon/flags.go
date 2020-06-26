@@ -28,9 +28,14 @@ var (
 		Usage: `name of consensus ("raft", "ibft")`,
 	}
 
-	WSEndpointFlag = cli.StringFlag{
-		Name:  "wsendpoint",
-		Usage: "geth clients WS endpoint",
+	DebugFlag = cli.BoolFlag{
+		Name:  "debug",
+		Usage: `debug mode`,
+	}
+
+	HttpEndpointFlag = cli.StringFlag{
+		Name:  "httpendpoint",
+		Usage: "geth chainReader's http endpoint",
 	}
 
 	ReportFileFlag = cli.StringFlag{

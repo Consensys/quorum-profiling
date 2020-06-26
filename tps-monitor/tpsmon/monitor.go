@@ -1,16 +1,13 @@
 package tpsmon
 
 import (
-	"context"
 	"fmt"
-	"log"
-	"math/big"
 	"os"
 	"time"
 
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethclient"
+	log "github.com/sirupsen/logrus"
+
+	"github.com/QuorumEngineering/quorum-test/tps-monitor/reader"
 )
 
 // TPSRecord represents a data point of TPS at a specific time
@@ -32,19 +29,18 @@ func (t TPSRecord) ReportString() string {
 
 // TPSMonitor implements a monitor service
 type TPSMonitor struct {
-	isRaft       bool                  // represents consensus
-	sub          ethereum.Subscription // ethereum subscriptions
-	headers      chan *types.Header    // block header from chain
-	client       *ethclient.Client     // ethereum client
-	tpsRecs      []TPSRecord           // list of TPS data points recorded
-	report       string                // report name to store TPS data points
-	fromBlk      uint64                // from block number
-	toBlk        uint64                // to block number
-	stopc        chan struct{}         // stop channel
-	firstBlkTime *time.Time            // first block's time
-	refTime      time.Time             // reference time
-	refTimeNext  time.Time             // next expected reference time
-	blkTimeNext  time.Time             // next expected block time
+	isRaft       bool                   // represents consensus
+	bdCh         chan *reader.BlockData // block data from chain
+	chainReader  *reader.GethClient     // ethereum chainReader
+	tpsRecs      []TPSRecord            // list of TPS data points recorded
+	report       string                 // report name to store TPS data points
+	fromBlk      uint64                 // from block number
+	toBlk        uint64                 // to block number
+	stopc        chan struct{}          // stop channel
+	firstBlkTime *time.Time             // first block's time
+	refTime      time.Time              // reference time
+	refTimeNext  time.Time              // next expected reference time
+	blkTimeNext  time.Time              // next expected block time
 	blkCnt       uint64
 	txnsCnt      uint64   // total transaction count
 	rptFile      *os.File // report file
@@ -53,46 +49,50 @@ type TPSMonitor struct {
 
 // Date format to show only hour and minute
 const (
-	dateFmtMinSec = "Jan-02 15:04:05"
+	dateFmtMinSec = "01 Jan 2006 15:04:05"
 )
 
-func NewTPSMonitor(awsCfg *AwsCloudwatchService, isRaft bool, report string, frmBlk uint64, toBlk uint64, sub ethereum.Subscription, headers chan *types.Header, client *ethclient.Client) *TPSMonitor {
-
+func NewTPSMonitor(awsCfg *AwsCloudwatchService, isRaft bool, report string, frmBlk uint64, toBlk uint64, httpendpoint string) *TPSMonitor {
+	bdCh := make(chan *reader.BlockData, 1)
 	tm := &TPSMonitor{
 		isRaft:  isRaft,
 		report:  report,
-		sub:     sub,
-		headers: headers,
-		client:  client,
+		bdCh:    bdCh,
 		fromBlk: frmBlk,
 		toBlk:   toBlk,
 		stopc:   make(chan struct{}),
 		awsCfg:  awsCfg,
 	}
-
+	tm.chainReader = reader.NewGethClient(httpendpoint, bdCh, tm.stopc)
 	if tm.report != "" {
 		var err error
 		if tm.rptFile, err = os.Create(tm.report); err != nil {
 			log.Fatalf("error creating report file %s\n", tm.report)
 		}
 		if _, err := tm.rptFile.WriteString("localTime,refTime,TPS,TxnCount,BlockCount\n"); err != nil {
-			log.Printf("ERROR: writing to report failed err:%v", err)
+			log.Errorf("writing to report failed err:%v", err)
 		}
 		tm.rptFile.Sync()
 	}
 	return tm
 }
 
-// starts service to calculate tps
-func (tm *TPSMonitor) Start() {
+func (tm *TPSMonitor) IfBlockRangeGiven() bool {
+	return tm.fromBlk > 0 && tm.toBlk > 0
+}
+
+func (tm *TPSMonitor) StartTpsForBlockRange() {
 	tm.init()
-	if tm.fromBlk > 0 && tm.toBlk > 0 {
-		go tm.calcTpsFromBlockRange()
-		log.Printf("tps calc started - fromBlock:%v toBlock:%v\n", tm.fromBlk, tm.toBlk)
-	} else {
-		go tm.calcTpsFromNewBlocks()
-		log.Print("tps monitor started")
-	}
+	log.Infof("tps calc started - fromBlock:%v toBlock:%v\n", tm.fromBlk, tm.toBlk)
+	tm.calcTpsFromBlockRange()
+}
+
+// starts service to calculate tps
+func (tm *TPSMonitor) StartTpsForNewBlocksFromChain() {
+	tm.init()
+	go tm.chainReader.Start()
+	go tm.calcTpsFromNewBlocks()
+	log.Infof("tps monitor started")
 }
 
 // stops service
@@ -105,17 +105,17 @@ func (tm *TPSMonitor) Stop() {
 
 // waits for stop signal to end service
 func (tm *TPSMonitor) Wait() {
-	log.Print("tps monitor waiting to stop")
+	log.Infof("tps monitor waiting to stop")
 	<-tm.stopc
-	log.Print("tps monitor wait over stopping")
+	log.Infof("tps monitor wait over stopping")
 }
 
 // initializes service
 func (tm *TPSMonitor) init() {
 	if tm.isRaft {
-		log.Print("consensus is raft")
+		log.Infof("consensus is raft")
 	} else {
-		log.Print("consensus is ibft")
+		log.Infof("consensus is ibft")
 	}
 	tm.refTime = time.Date(1, 1, 1, 0, 0, 0, 0, time.UTC)
 	tm.refTimeNext = time.Date(1, 1, 1, 0, 0, 0, 0, time.UTC)
@@ -124,7 +124,7 @@ func (tm *TPSMonitor) init() {
 }
 
 // read data from block and calculated TPS
-func (tm *TPSMonitor) readBlock(block *types.Block) {
+func (tm *TPSMonitor) readBlock(block *reader.BlockData) {
 	var blkTime time.Time
 	var tps uint64
 	var nilBlk = false
@@ -134,19 +134,19 @@ func (tm *TPSMonitor) readBlock(block *types.Block) {
 		nilBlk = true
 	} else {
 		if tm.isRaft {
-			r := block.Time() % 1e9
-			blkTime = time.Unix(int64(block.Time()/1e9), int64(r))
+			r := block.Time % 1e9
+			blkTime = time.Unix(int64(block.Time/1e9), int64(r))
 		} else {
-			blkTime = time.Unix(int64(block.Time()), 0)
+			blkTime = time.Unix(int64(block.Time), 0)
 		}
 	}
 
 	if tm.firstBlkTime != nil {
 		totSecs := blkTime.Sub(*tm.firstBlkTime).Milliseconds() / 1000
-		log.Printf("total secs:%v total tx:%v\n", totSecs, tm.txnsCnt)
+		log.Debugf("total secs:%v total tx:%v", totSecs, tm.txnsCnt)
 		if totSecs > 0 {
 			tps = tm.txnsCnt / uint64(totSecs)
-			log.Printf("TPS:%v txnsCnt:%v blkCnt:%v\n", tps, tm.txnsCnt, tm.blkCnt)
+			log.Infof("TPS:%v txnsCnt:%v blkCnt:%v", tps, tm.txnsCnt, tm.blkCnt)
 		}
 	}
 
@@ -166,10 +166,10 @@ func (tm *TPSMonitor) readBlock(block *types.Block) {
 		rtime := fmt.Sprintf("%02d:%02d:%02d:%02d", yd, hh, mm, ss)
 
 		tr := TPSRecord{rtime: rtime, ltime: ltime, tps: uint32(tps), blks: tm.blkCnt, txns: tm.txnsCnt}
-		log.Print(tr.String() + "\n")
+		log.Debug(tr.String())
 		if tm.rptFile != nil {
 			if _, err := tm.rptFile.WriteString(tr.ReportString()); err != nil {
-				log.Printf("ERROR: writing to report failed %v", err)
+				log.Errorf("writing to report failed %v", err)
 			}
 			tm.rptFile.Sync()
 		}
@@ -181,9 +181,8 @@ func (tm *TPSMonitor) readBlock(block *types.Block) {
 	}
 
 	if !nilBlk {
-		txns := len(block.Transactions())
 		tm.blkCnt++
-		tm.txnsCnt += uint64(txns)
+		tm.txnsCnt += uint64(block.TxnCnt)
 	}
 }
 
@@ -201,19 +200,17 @@ func (tm *TPSMonitor) calcTpsFromNewBlocks() {
 	defer ticker.Stop()
 	for {
 		select {
-		case err := <-tm.sub.Err():
-			log.Fatal(err)
-		case header := <-tm.headers:
-			block, err := tm.client.BlockByNumber(context.Background(), header.Number)
-			if err != nil {
-				log.Fatal(err)
+		case block := <-tm.bdCh:
+			if block == nil {
+				log.Fatal("reading block data failed")
+				return
 			}
+			log.Infof("received new block %v", block)
 			tm.readBlock(block)
 		case <-ticker.C:
-			log.Print("ticker ticked")
 			tm.readBlock(nil)
 		case <-tm.stopc:
-			log.Print("tps monitor stopped - exit loop")
+			log.Warning("tps monitor stopped - exit loop")
 			return
 		}
 	}
@@ -224,7 +221,7 @@ func (tm *TPSMonitor) calcTpsFromBlockRange() {
 	stBlk := tm.fromBlk
 	toBlk := tm.toBlk
 	for stBlk <= toBlk {
-		block, err := tm.client.BlockByNumber(context.Background(), big.NewInt(int64(stBlk)))
+		block, err := tm.chainReader.GetBlock(stBlk)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -235,8 +232,8 @@ func (tm *TPSMonitor) calcTpsFromBlockRange() {
 
 func (tm *TPSMonitor) printTPS() {
 	trl := len(tm.tpsRecs)
-	log.Printf("Total tps records %d\n", trl)
+	log.Infof("Total tps records %d", trl)
 	for i, v := range tm.tpsRecs {
-		log.Printf("%d. %v\n", i, v.String())
+		log.Infof("%d. %v", i, v.String())
 	}
 }

@@ -2,10 +2,8 @@ package tpsmon
 
 import (
 	"bufio"
-	"github.com/aws/aws-sdk-go/service/cloudwatch"
 	"io/ioutil"
 	"log"
-	"math/big"
 	"os"
 	"os/exec"
 	"strconv"
@@ -13,60 +11,30 @@ import (
 	"testing"
 	"time"
 
+	"github.com/QuorumEngineering/quorum-test/tps-monitor/reader"
+	"github.com/aws/aws-sdk-go/service/cloudwatch"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/stretchr/testify/assert"
 )
 
-// create new dummy transaction
-func getNewTxn() *types.Transaction {
-	emptyTx := types.NewTransaction(
-		0,
-		common.HexToAddress("095e7baea6a6c7c4c2dfeb977efac326af552d87"),
-		big.NewInt(0), 0, big.NewInt(0),
-		nil,
-	)
-	return emptyTx
-}
-
-// create new dummy block header
-func getNewHeader(n int64, isRaft bool, t1 time.Time) *types.Header {
-	fakeParentHash := common.HexToHash("0xc2c1dc1be8054808c69e06137429899d")
-
+// create new dummy block data
+func getNewBlockData(n int64, txnCnt int, isRaft bool, t1 time.Time) *reader.BlockData {
 	var tm int64
 	if isRaft {
 		tm = t1.UnixNano()
 	} else {
 		tm = t1.Unix()
 	}
-	header := &types.Header{
-		ParentHash: fakeParentHash,
-		Number:     big.NewInt(n),
-		Difficulty: big.NewInt(1),
-		GasLimit:   uint64(0),
-		GasUsed:    uint64(0),
-		Coinbase:   common.HexToAddress("095e7baea6a6c7c4c2dfeb977efac326af552d87"),
-		Time:       uint64(tm),
+	blkData := &reader.BlockData{
+		Number:   uint64(n),
+		GasLimit: uint64(0),
+		GasUsed:  uint64(0),
+		Time:     uint64(tm),
+		TxnCnt:   txnCnt,
 	}
-	return header
-}
-
-// create a new list of dummy transactions
-func txnsList(n int) []*types.Transaction {
-	i := 0
-	var txns []*types.Transaction
-	for i < n {
-		txns = append(txns, getNewTxn())
-		i++
-	}
-	return txns
-}
-
-// create new dummy block
-func getNewBlock(h *types.Header, txns []*types.Transaction) *types.Block {
-	return types.NewBlock(h, txns, nil, nil)
+	return blkData
 }
 
 func testTPS(isRaft bool, t *testing.T) {
@@ -80,13 +48,13 @@ func testTPS(isRaft bool, t *testing.T) {
 
 	defer os.Remove(tempFile)
 
-	tm := NewTPSMonitor(nil, isRaft, tempFile, 1, 10, nil, nil, nil)
+	tm := NewTPSMonitor(nil, isRaft, tempFile, 1, 10, "")
 
 	assert.NotNil(tm, "creating tps monitor failed")
 
 	tm.init()
 
-	var blksArr []*types.Block
+	var blksArr []*reader.BlockData
 	var c int
 	var t1, t2 time.Time
 	if isRaft {
@@ -98,7 +66,7 @@ func testTPS(isRaft bool, t *testing.T) {
 	}
 	for c = 1; c <= 20; c++ {
 		t2 = t1.Add(time.Second) //.Add(time.Second)
-		blksArr = append(blksArr, getNewBlock(getNewHeader(int64(c), isRaft, t1), txnsList(c*1000)))
+		blksArr = append(blksArr, getNewBlockData(int64(c), c*1000, isRaft, t1))
 		t1 = t2
 	}
 
@@ -196,7 +164,7 @@ func TestEexec(t *testing.T) {
 
 func TestExecAws(t *testing.T) {
 	mySession := session.Must(session.NewSession())
-	// Create a CloudWatch client with additional configuration
+	// Create a CloudWatch chainReader with additional configuration
 	svc := cloudwatch.New(mySession, aws.NewConfig().WithRegion("ap-southeast-1"))
 	t.Log(svc)
 	var pmd *cloudwatch.PutMetricDataInput
