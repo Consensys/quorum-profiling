@@ -27,6 +27,7 @@ var (
 		tpsmon.AwsRegionFlag,
 		tpsmon.AwsNwNameFlag,
 		tpsmon.AwsInstanceFlag,
+		tpsmon.PrometheusPortFlag,
 	}
 )
 
@@ -56,6 +57,7 @@ func tps(ctx *cli.Context) error {
 	awsNwName := ctx.GlobalString(tpsmon.AwsNwNameFlag.Name)
 	awsInstance := ctx.GlobalString(tpsmon.AwsInstanceFlag.Name)
 	debugMode := ctx.GlobalBool(tpsmon.DebugFlag.Name)
+	prometheusPort := ctx.GlobalInt(tpsmon.PrometheusPortFlag.Name)
 	if httpendpoint == "" {
 		return errors.New("httpendpoint is empty")
 	}
@@ -67,9 +69,14 @@ func tps(ctx *cli.Context) error {
 	if debugMode {
 		log.SetLevel(log.DebugLevel)
 	}
-	var awsCfg *tpsmon.AwsCloudwatchService
+	var awsService *tpsmon.AwsCloudwatchService
+	var promethService *tpsmon.PrometheusMetricsService
 	if awsEnabled {
-		awsCfg = tpsmon.NewCloudwatchService(awsRegion, awsNwName, awsInstance)
+		awsService = tpsmon.NewCloudwatchService(awsRegion, awsNwName, awsInstance)
+	}
+
+	if prometheusPort > 0 {
+		promethService = tpsmon.NewPrometheusMetricsService(prometheusPort)
 	}
 
 	fromBlk := ctx.GlobalUint64(tpsmon.FromBlockFlag.Name)
@@ -78,7 +85,7 @@ func tps(ctx *cli.Context) error {
 		log.Fatalf("from block is less than to block no")
 	}
 
-	tm := tpsmon.NewTPSMonitor(awsCfg, ctx.GlobalString(tpsmon.ConsensusFlag.Name) == "raft", ctx.GlobalString(tpsmon.ReportFileFlag.Name),
+	tm := tpsmon.NewTPSMonitor(awsService, promethService, ctx.GlobalString(tpsmon.ConsensusFlag.Name) == "raft", ctx.GlobalString(tpsmon.ReportFileFlag.Name),
 		fromBlk, toBlk, httpendpoint)
 	startTps(tm)
 	tpsPort := ctx.GlobalInt(tpsmon.TpsPortFlag.Name)

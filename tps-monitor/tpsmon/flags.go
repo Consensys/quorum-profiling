@@ -61,4 +61,10 @@ var (
 		Usage: "to block no",
 		Value: 0,
 	}
+
+	PrometheusPortFlag = cli.IntFlag{
+		Name:  "prometheusport",
+		Usage: "Enable prometheus metrics",
+		Value: 0,
+	}
 )
