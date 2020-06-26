@@ -502,7 +502,7 @@ resource "local_file" "start_tps_sh" {
   content  = <<-EOF
 #!/bin/bash
 echo "start tps monitor..."
-sudo docker run -d -v ${local.wrk_stresstest_home_path}:/stresstest -p 7575:7575 --name tps-monitor --log-driver=awslogs --log-opt awslogs-region=${var.aws_region} --log-opt awslogs-group=${aws_cloudwatch_log_group.quorum.name} --log-opt awslogs-stream=tpsmonitor ${var.tps_docker_image} --awsmetrics --awsregion ${var.aws_region} --awsnetwork ${var.aws_network_name} --awsinst ${aws_instance.node[0].public_ip} --wsendpoint ws://${aws_instance.node[0].private_ip}:8546 --consensus=${var.consensus} --report /stresstest/tps-report.csv
+sudo docker run -d -v ${local.wrk_stresstest_home_path}:/stresstest -p 7575:7575 --name tps-monitor --log-driver=awslogs --log-opt awslogs-region=${var.aws_region} --log-opt awslogs-group=${aws_cloudwatch_log_group.quorum.name} --log-opt awslogs-stream=tpsmonitor ${var.tps_docker_image} --awsmetrics --awsregion ${var.aws_region} --awsnetwork ${var.aws_network_name} --awsinst ${aws_instance.node[0].public_ip} --httpendpoint http://${aws_instance.node[0].private_ip}:8545 --consensus=${var.consensus} --report /stresstest/tps-report.csv
 echo "tps monitor started"
 EOF
 }

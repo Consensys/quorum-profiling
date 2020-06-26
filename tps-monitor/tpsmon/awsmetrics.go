@@ -2,12 +2,14 @@ package tpsmon
 
 import (
 	"fmt"
+	"strconv"
+	"time"
+
+	log "github.com/sirupsen/logrus"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
-	"log"
-	"strconv"
-	"time"
 )
 
 // wrapper for aws cloudwatch to publish metrics
@@ -20,7 +22,7 @@ type AwsCloudwatchService struct {
 
 func NewCloudwatchService(region string, nwname string, inst string) *AwsCloudwatchService {
 	mySession := session.Must(session.NewSession())
-	// Create a CloudWatch client with additional configuration
+	// Create a CloudWatch chainReader with additional configuration
 	cw := cloudwatch.New(mySession, aws.NewConfig().WithRegion(region))
 	return &AwsCloudwatchService{region, nwname, inst, cw}
 }
@@ -45,9 +47,9 @@ func (a *AwsCloudwatchService) PutMetrics(mname string, value string, ts time.Ti
 		Namespace:  &nspace,
 	}
 	if _, err := a.cw.PutMetricData(pmd); err != nil {
-		log.Printf("ERROR: aws cloudwatch putmetrics failed for mname:%s value:%s err:%v", mname, value, err)
+		log.Errorf("aws cloudwatch putmetrics failed for mname:%s value:%s err:%v", mname, value, err)
 		return err
 	}
-	log.Printf("published metric name:%s value:%v to aws cloudwatch", mname, data)
+	log.Infof("published metric name:%s value:%v to aws cloudwatch", mname, data)
 	return nil
 }

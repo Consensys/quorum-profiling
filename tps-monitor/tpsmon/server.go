@@ -2,16 +2,18 @@ package tpsmon
 
 import (
 	"fmt"
+	"image/color"
+	"net/http"
+	"strconv"
+	"time"
+
+	log "github.com/sirupsen/logrus"
+
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
 	"gonum.org/v1/plot/vg"
 	"gonum.org/v1/plot/vg/draw"
 	"gonum.org/v1/plot/vg/vgsvg"
-	"image/color"
-	"log"
-	"net/http"
-	"strconv"
-	"time"
 )
 
 type TPSServer struct {
@@ -32,7 +34,7 @@ func NewTPSServer(tm *TPSMonitor, port int) TPSServer {
 func (s TPSServer) Start() {
 	http.HandleFunc("/tpsdata", s.PrintTPSData)
 	http.HandleFunc("/tpschart", s.PrintTPSChart)
-	log.Printf("started tps monitor server at port %d", s.port)
+	log.Infof("started tps monitor server at port %d", s.port)
 	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(s.port), nil))
 }
 
@@ -57,14 +59,14 @@ func (s TPSServer) PrintTPSChart(w http.ResponseWriter, r *http.Request) {
 		if tw, err := strconv.Atoi(iw); err == nil {
 			cW = tw
 		} else {
-			log.Print("invalid canvas width", iw)
+			log.Error("invalid canvas width", iw)
 		}
 	}
 	if ih != "" {
 		if th, err := strconv.Atoi(ih); err == nil {
 			cH = th
 		} else {
-			log.Print("invalid canvas height", ih)
+			log.Error("invalid canvas height", ih)
 		}
 	}
 
@@ -75,7 +77,6 @@ func (s TPSServer) PrintTPSChart(w http.ResponseWriter, r *http.Request) {
 	if cW > 50 {
 		cW = 50
 	}
-
 
 	t1 := time.Now()
 	p, err := plot.New()
@@ -109,7 +110,6 @@ func (s TPSServer) PrintTPSChart(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-
 	p.Add(plotter.NewGrid())
 
 	// Make a line plotter and set its style.
@@ -119,7 +119,6 @@ func (s TPSServer) PrintTPSChart(w http.ResponseWriter, r *http.Request) {
 	}
 	l1.LineStyle.Width = vg.Points(1)
 	l1.LineStyle.Color = color.RGBA{B: 255, A: 255}
-
 
 	p.Add(l1)
 	p.Legend.Add("quorum", l1)
@@ -132,13 +131,11 @@ func (s TPSServer) PrintTPSChart(w http.ResponseWriter, r *http.Request) {
 	// Draw to the Canvas.
 	p.Draw(draw.New(c))
 
-
-
 	// Write the Canvas to a io.Writer (in this case, os.Stdout).
 	if _, err := c.WriteTo(w); err != nil {
-		log.Printf("error - writing image to responseWriter. %v", err)
+		log.Errorf("error - writing image to responseWriter. %v", err)
 	}
 
 	t2 := time.Now().Sub(t1).Milliseconds()
-	log.Printf("time taken: %d\n", t2)
+	log.Infof("time taken: %d\n", t2)
 }

@@ -1,27 +1,25 @@
 package main
 
 import (
-	"context"
 	"errors"
 	"fmt"
-	"github.com/QuorumEngineering/tps-monitor/tpsmon"
-	"github.com/ethereum/go-ethereum/console"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethclient"
+	log "github.com/sirupsen/logrus"
+
+	"github.com/QuorumEngineering/quorum-test/tps-monitor/tpsmon"
 	"gopkg.in/urfave/cli.v1"
 )
 
 var (
 	app   = cli.NewApp()
 	flags = []cli.Flag{
-		tpsmon.WSEndpointFlag,
 		tpsmon.ConsensusFlag,
+		tpsmon.DebugFlag,
 		tpsmon.TpsPortFlag,
+		tpsmon.HttpEndpointFlag,
 		tpsmon.ReportFileFlag,
 		tpsmon.FromBlockFlag,
 		tpsmon.ToBlockFlag,
@@ -33,50 +31,45 @@ var (
 )
 
 func init() {
+	log.SetFormatter(&log.TextFormatter{
+		DisableColors: true,
+		FullTimestamp: true,
+	})
 	app.Action = tps
 	app.Before = func(c *cli.Context) error {
-		log.Print("starting tps monitor")
+		log.Info("starting tps monitor")
 		return nil
 	}
 	app.After = func(c *cli.Context) error {
-		log.Print("exiting tps monitor")
-		console.Stdin.Close()
+		log.Info("exiting tps monitor")
 		return nil
 	}
 	app.Flags = flags
-	app.Usage = "tpsmonitor connects to a geth client (enabled with WS endpoint) and monitors the TPS or calculate TPS for given block range"
+	app.Usage = "tpsmonitor connects to a geth client (enabled with JSON-RPC endpoint) and monitors the TPS or calculate TPS for given block range"
 }
 
 func tps(ctx *cli.Context) error {
-	wsendpoint := ctx.GlobalString(tpsmon.WSEndpointFlag.Name)
+	httpendpoint := ctx.GlobalString(tpsmon.HttpEndpointFlag.Name)
 	consensus := ctx.GlobalString(tpsmon.ConsensusFlag.Name)
 	awsEnabled := ctx.GlobalBool(tpsmon.AwsMetricsEnabledFlag.Name)
 	awsRegion := ctx.GlobalString(tpsmon.AwsRegionFlag.Name)
 	awsNwName := ctx.GlobalString(tpsmon.AwsNwNameFlag.Name)
 	awsInstance := ctx.GlobalString(tpsmon.AwsInstanceFlag.Name)
-	var awsCfg *tpsmon.AwsCloudwatchService
-	if awsEnabled {
-		awsCfg = tpsmon.NewCloudwatchService(awsRegion, awsNwName, awsInstance)
-	}
-
-	if wsendpoint == "" {
-		return errors.New("wsendpoint is empty")
+	debugMode := ctx.GlobalBool(tpsmon.DebugFlag.Name)
+	if httpendpoint == "" {
+		return errors.New("httpendpoint is empty")
 	}
 
 	if consensus == "" || (consensus != "raft" && consensus != "ibft") {
 		return errors.New("invalid consensus. should be raft or ibft")
 	}
 
-	log.Printf("connecting to %s", wsendpoint)
-	client, err := ethclient.Dial(wsendpoint)
-	if err != nil {
-		log.Fatal(err)
+	if debugMode {
+		log.SetLevel(log.DebugLevel)
 	}
-
-	headers := make(chan *types.Header)
-	sub, err := client.SubscribeNewHead(context.Background(), headers)
-	if err != nil {
-		return err
+	var awsCfg *tpsmon.AwsCloudwatchService
+	if awsEnabled {
+		awsCfg = tpsmon.NewCloudwatchService(awsRegion, awsNwName, awsInstance)
 	}
 
 	fromBlk := ctx.GlobalUint64(tpsmon.FromBlockFlag.Name)
@@ -86,7 +79,7 @@ func tps(ctx *cli.Context) error {
 	}
 
 	tm := tpsmon.NewTPSMonitor(awsCfg, ctx.GlobalString(tpsmon.ConsensusFlag.Name) == "raft", ctx.GlobalString(tpsmon.ReportFileFlag.Name),
-		fromBlk, toBlk, sub, headers, client)
+		fromBlk, toBlk, httpendpoint)
 	startTps(tm)
 	tpsPort := ctx.GlobalInt(tpsmon.TpsPortFlag.Name)
 	tpsmon.NewTPSServer(tm, tpsPort)
@@ -95,21 +88,25 @@ func tps(ctx *cli.Context) error {
 }
 
 func startTps(monitor *tpsmon.TPSMonitor) {
-	monitor.Start()
-	go func() {
-		sigc := make(chan os.Signal, 1)
-		signal.Notify(sigc, syscall.SIGINT, syscall.SIGTERM)
-		defer signal.Stop(sigc)
-		<-sigc
-		log.Print("Got interrupt, shutting down...")
-		go monitor.Stop()
-		for i := 10; i > 0; i-- {
+	if monitor.IfBlockRangeGiven() {
+		go monitor.StartTpsForBlockRange()
+	} else {
+		monitor.StartTpsForNewBlocksFromChain()
+		go func() {
+			sigc := make(chan os.Signal, 1)
+			signal.Notify(sigc, syscall.SIGINT, syscall.SIGTERM)
+			defer signal.Stop(sigc)
 			<-sigc
-			if i > 1 {
-				log.Print("WARN: Already shutting down, interrupt more to panic.", "times", i-1)
+			log.Error("Got interrupt, shutting down...")
+			go monitor.Stop()
+			for i := 10; i > 0; i-- {
+				<-sigc
+				if i > 1 {
+					log.Warning("Already shutting down, interrupt more to panic.", "times", i-1)
+				}
 			}
-		}
-	}()
+		}()
+	}
 }
 
 func main() {
