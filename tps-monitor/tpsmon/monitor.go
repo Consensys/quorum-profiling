@@ -29,22 +29,23 @@ func (t TPSRecord) ReportString() string {
 
 // TPSMonitor implements a monitor service
 type TPSMonitor struct {
-	isRaft       bool                   // represents consensus
-	bdCh         chan *reader.BlockData // block data from chain
-	chainReader  *reader.GethClient     // ethereum chainReader
-	tpsRecs      []TPSRecord            // list of TPS data points recorded
-	report       string                 // report name to store TPS data points
-	fromBlk      uint64                 // from block number
-	toBlk        uint64                 // to block number
-	stopc        chan struct{}          // stop channel
-	firstBlkTime *time.Time             // first block's time
-	refTime      time.Time              // reference time
-	refTimeNext  time.Time              // next expected reference time
-	blkTimeNext  time.Time              // next expected block time
-	blkCnt       uint64
-	txnsCnt      uint64   // total transaction count
-	rptFile      *os.File // report file
-	awsCfg       *AwsCloudwatchService
+	isRaft         bool                   // represents consensus
+	bdCh           chan *reader.BlockData // block data from chain
+	chainReader    *reader.GethClient     // ethereum chainReader
+	tpsRecs        []TPSRecord            // list of TPS data points recorded
+	report         string                 // report name to store TPS data points
+	fromBlk        uint64                 // from block number
+	toBlk          uint64                 // to block number
+	stopc          chan struct{}          // stop channel
+	firstBlkTime   *time.Time             // first block's time
+	refTime        time.Time              // reference time
+	refTimeNext    time.Time              // next expected reference time
+	blkTimeNext    time.Time              // next expected block time
+	blkCnt         uint64
+	txnsCnt        uint64   // total transaction count
+	rptFile        *os.File // report file
+	awsService     *AwsCloudwatchService
+	promethService *PrometheusMetricsService
 }
 
 // Date format to show only hour and minute
@@ -52,16 +53,17 @@ const (
 	dateFmtMinSec = "01 Jan 2006 15:04:05"
 )
 
-func NewTPSMonitor(awsCfg *AwsCloudwatchService, isRaft bool, report string, frmBlk uint64, toBlk uint64, httpendpoint string) *TPSMonitor {
+func NewTPSMonitor(awsService *AwsCloudwatchService, promethService *PrometheusMetricsService, isRaft bool, report string, frmBlk uint64, toBlk uint64, httpendpoint string) *TPSMonitor {
 	bdCh := make(chan *reader.BlockData, 1)
 	tm := &TPSMonitor{
-		isRaft:  isRaft,
-		report:  report,
-		bdCh:    bdCh,
-		fromBlk: frmBlk,
-		toBlk:   toBlk,
-		stopc:   make(chan struct{}),
-		awsCfg:  awsCfg,
+		isRaft:         isRaft,
+		report:         report,
+		bdCh:           bdCh,
+		fromBlk:        frmBlk,
+		toBlk:          toBlk,
+		stopc:          make(chan struct{}),
+		awsService:     awsService,
+		promethService: promethService,
 	}
 	tm.chainReader = reader.NewGethClient(httpendpoint, bdCh, tm.stopc)
 	if tm.report != "" {
@@ -90,6 +92,10 @@ func (tm *TPSMonitor) StartTpsForBlockRange() {
 // starts service to calculate tps
 func (tm *TPSMonitor) StartTpsForNewBlocksFromChain() {
 	tm.init()
+	if tm.promethService != nil {
+		go tm.promethService.Start()
+		log.Infof("prometheus service started")
+	}
 	go tm.chainReader.Start()
 	go tm.calcTpsFromNewBlocks()
 	log.Infof("tps monitor started")
@@ -176,6 +182,8 @@ func (tm *TPSMonitor) readBlock(block *reader.BlockData) {
 		tm.tpsRecs = append(tm.tpsRecs, tr)
 		//publish metrics to aws cloudwatch
 		go tm.putMetricsInAws(tm.blkTimeNext, fmt.Sprintf("%v", tps), fmt.Sprintf("%v", tm.txnsCnt), fmt.Sprintf("%v", tm.blkCnt))
+		//publish metrics to prometheus
+		go tm.putMetricsInPrometheus(tm.blkTimeNext, tps, tm.txnsCnt, tm.blkCnt)
 		tm.refTimeNext = tm.refTimeNext.Add(time.Second)
 		tm.blkTimeNext = tm.blkTimeNext.Add(time.Second)
 	}
@@ -187,10 +195,10 @@ func (tm *TPSMonitor) readBlock(block *reader.BlockData) {
 }
 
 func (tm *TPSMonitor) putMetricsInAws(lt time.Time, tps string, txnCnt string, blkCnt string) {
-	if tm.awsCfg != nil {
-		tm.awsCfg.PutMetrics("TPS", tps, lt)
-		tm.awsCfg.PutMetrics("TxnCount", txnCnt, lt)
-		tm.awsCfg.PutMetrics("BlockCount", blkCnt, lt)
+	if tm.awsService != nil {
+		tm.awsService.PutMetrics("TPS", tps, lt)
+		tm.awsService.PutMetrics("TxnCount", txnCnt, lt)
+		tm.awsService.PutMetrics("BlockCount", blkCnt, lt)
 	}
 }
 
@@ -235,5 +243,11 @@ func (tm *TPSMonitor) printTPS() {
 	log.Infof("Total tps records %d", trl)
 	for i, v := range tm.tpsRecs {
 		log.Infof("%d. %v", i, v.String())
+	}
+}
+
+func (tm *TPSMonitor) putMetricsInPrometheus(tmRef time.Time, tps uint64, txnCnt uint64, blkCnt uint64) {
+	if tm.promethService != nil {
+		tm.promethService.publishMetrics(tmRef, tps, txnCnt, blkCnt)
 	}
 }

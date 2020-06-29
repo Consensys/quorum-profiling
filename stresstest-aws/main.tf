@@ -69,7 +69,7 @@ variable "jmeter_duration_of_run" {
 }
 
 variable "tps_docker_image" {
-  default = "amalrajmani/tpsmonitor:v1"
+  default = "amalrajmani/tpsmonitor:v3"
 }
 
 variable "jmeter_docker_image" {
@@ -77,7 +77,7 @@ variable "jmeter_docker_image" {
 }
 
 variable "quorum_docker_image" {
-  default = "quorumengineering/quorum:2.4.0"
+  default = "quorumengineering/quorum:latest"
 }
 variable "tessera_docker_image" {
   default = "quorumengineering/tessera:0.11"
@@ -149,6 +149,7 @@ locals {
   host_ws_port                  = 8546
   host_tm_p2p_port              = 9000
   host_tm_third_party_port      = 9080
+  host_prometheus_port          = 2112
 }
 
 # randomize the docker network cidr
