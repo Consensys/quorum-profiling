@@ -23,7 +23,7 @@ quorum_docker_image = "quorumengineering/quorum:2.6.0"
 // docker image of tessera
 tessera_docker_image = "quorumengineering/tessera:0.11"
 
-tps_docker_image = "amalrajmani/tpsmonitor:v1"
+tps_docker_image = "amalrajmani/tpsmonitor:v3"
 jmeter_docker_image = "amalrajmani/jmeter:5.2.1"
 
 // jmeter test profile type you want to run

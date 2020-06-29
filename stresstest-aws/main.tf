@@ -69,7 +69,7 @@ variable "jmeter_duration_of_run" {
 }
 
 variable "tps_docker_image" {
-  default = "amalrajmani/tpsmonitor:v1"
+  default = "amalrajmani/tpsmonitor:v3"
 }
 
 variable "jmeter_docker_image" {
@@ -77,7 +77,7 @@ variable "jmeter_docker_image" {
 }
 
 variable "quorum_docker_image" {
-  default = "quorumengineering/quorum:2.4.0"
+  default = "quorumengineering/quorum:latest"
 }
 variable "tessera_docker_image" {
   default = "quorumengineering/tessera:0.11"
