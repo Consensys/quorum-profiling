@@ -149,6 +149,7 @@ locals {
   host_ws_port                  = 8546
   host_tm_p2p_port              = 9000
   host_tm_third_party_port      = 9080
+  host_prometheus_port          = 2112
 }
 
 # randomize the docker network cidr

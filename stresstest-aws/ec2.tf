@@ -106,6 +106,16 @@ resource "aws_security_group" "external" {
     ]
   }
 
+  ingress {
+    from_port = local.host_prometheus_port
+    protocol  = "tcp"
+    to_port   = local.host_prometheus_port
+    description = format("Reason: Allow access to prometheus metrics data from myIP by: %s", var.aws_user)
+    cidr_blocks = [
+      "${chomp(data.http.myIpAddr.body)}/32"
+    ]
+  }
+
   tags = {
     Name = local.network_name
     By   = "quorum"
@@ -502,7 +512,7 @@ resource "local_file" "start_tps_sh" {
   content  = <<-EOF
 #!/bin/bash
 echo "start tps monitor..."
-sudo docker run -d -v ${local.wrk_stresstest_home_path}:/stresstest -p 7575:7575 --name tps-monitor --log-driver=awslogs --log-opt awslogs-region=${var.aws_region} --log-opt awslogs-group=${aws_cloudwatch_log_group.quorum.name} --log-opt awslogs-stream=tpsmonitor ${var.tps_docker_image} --awsmetrics --awsregion ${var.aws_region} --awsnetwork ${var.aws_network_name} --awsinst ${aws_instance.node[0].public_ip} --httpendpoint http://${aws_instance.node[0].private_ip}:8545 --consensus=${var.consensus} --report /stresstest/tps-report.csv
+sudo docker run -d -v ${local.wrk_stresstest_home_path}:/stresstest -p ${local.host_tps_port}:${local.host_tps_port} -p ${local.host_prometheus_port}:${local.host_prometheus_port} --name tps-monitor --log-driver=awslogs --log-opt awslogs-region=${var.aws_region} --log-opt awslogs-group=${aws_cloudwatch_log_group.quorum.name} --log-opt awslogs-stream=tpsmonitor ${var.tps_docker_image} --awsmetrics --awsregion ${var.aws_region} --awsnetwork ${var.aws_network_name} --awsinst ${aws_instance.node[0].public_ip} --httpendpoint http://${aws_instance.node[0].private_ip}:${local.host_rpc_port} --consensus=${var.consensus} --report /stresstest/tps-report.csv --prometheusport ${local.host_prometheus_port} --port ${local.host_tps_port}
 echo "tps monitor started"
 EOF
 }
