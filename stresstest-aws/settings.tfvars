@@ -19,7 +19,7 @@ txpoolSize = 50000
 // geth 197 flag for specifying geth197 specific command line args
 geth19 = true
 // docker image of quorum
-quorum_docker_image = "quorumengineering/quorum:2.6.0"
+quorum_docker_image = "quorumengineering/quorum:latest"
 // docker image of tessera
 tessera_docker_image = "quorumengineering/tessera:0.11"
 
