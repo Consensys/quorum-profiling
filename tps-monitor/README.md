@@ -1,7 +1,7 @@
 # TPS Monitor
 Tool to monitor transactions per second in Quorum.
 The tool can be used to calculate TPS in one of the two ways given below:
-1. calculate TPS on new blocks inserted to chain - it continuosly calculates TPS on new blocks inserted to the chain. 
+1. calculate TPS on new blocks inserted to chain - it continuously calculates TPS on new blocks inserted to the chain. 
 2. calculate TPS for a given range of blocks - it calculates TPS for a given range of blocks.
 
 ##### In both modes it exposes the TPS data (aggregated at minute level) via http endpoint.
@@ -17,13 +17,17 @@ You can install it using your favourite package manager. Once the dependencies a
 #### Usage
 Run `tpsmonitor --help` to see usage.
 
-WS API must be enabled in `geth` to run tpsmonitor. Default port of HTTP endpoint is `7575`
+RPC API must be enabled in `geth` to run tpsmonitor. Default port of HTTP endpoint is `7575`
 
 #### calculate TPS on new blocks
-Displays TPS calculated in the console for new blocks as they are inserted to the chain. Calculates TPS, total no of blocks and total no of transactions for every second and saves these results to the report file.
+Displays TPS calculated in the console for new blocks as they are inserted to the chain. 
+Calculates TPS, total no of blocks and total no of transactions for every second and saves these results to the report file.
+If `prometheus port` is provided these metrics can be accessed from `http://<host>:<prometheus port>/metrics`. The metrics names are as follows:
+1. `Quorum_TransactionProcessing_TPS`
+2. `Quorum_TransactionProcessing_total_blocks`
+3. `Quorum_TransactionProcessing_total_transactions`
 
-```tpsmonitor --wsendpoint <ws address> --consensus [raft|ibft] --report <report name>```
-Example: `tpsmonitor --wsendpoint ws://52.77.226.85:23000/ --consensus raft --report tps-m.csv --port <port no>`
+Example: `tpsmonitor --httpendpoint http://52.77.226.85:23000/ --consensus raft --report tps-m.csv --port 7575 --prometheusport 2112`
 
 Sample report:
 
@@ -42,10 +46,10 @@ Mar-23 06:03:05,00:00:00:05,1880,564064,1163
 Displays TPS calculated in the console for given range of blocks as they are read from the chain. Calculates TPS, total no of blocks and total no of transactions for every minute(for the given block range) and saves these results to the report file.
 
 ```tpsmonitor --wsendpoint <ws address> --consensus [raft|ibft] --report <report name>```
-Example: `tpsmonitor --wsendpoint ws://52.77.226.85:23000/ --consensus raft --from 1 --to 10000 --report tps-m.csv --port 8888`
+Example: `tpsmonitor --httpendpoint http://52.77.226.85:23000/ --consensus raft --from 1 --to 10000 --report tps-m.csv --port 8888`
 
 #### HTTP endpoint for TPS data
-
+TPS data (in CSV format) can be downloaded from the http endpoint.
 `http://<host>:<port>/tpsdata`
 
 sample output:
