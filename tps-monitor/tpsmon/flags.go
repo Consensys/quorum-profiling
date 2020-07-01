@@ -23,6 +23,40 @@ var (
 		Usage: `aws instance name`,
 	}
 
+	InfluxdbEnabledFlag = cli.BoolFlag{
+		Name:  "influxdb",
+		Usage: `influxdb enabled`,
+	}
+
+	InfluxdbEndpointFlag = cli.StringFlag{
+		Name:  "influxdb.endpoint",
+		Usage: `influxdb endpoint`,
+	}
+
+	InfluxdbTokenFlag = cli.StringFlag{
+		Name:  "influxdb.token",
+		Usage: `influxdb token or username:password`,
+		Value: ":",
+	}
+	InfluxdbOrgFlag = cli.StringFlag{
+		Name:  "influxdb.org",
+		Usage: `influxdb org name`,
+		Value: "",
+	}
+	InfluxdbBucketFlag = cli.StringFlag{
+		Name:  "influxdb.bucket",
+		Usage: `influxdb bucket or database name`,
+	}
+	InfluxdbPointNameFlag = cli.StringFlag{
+		Name:  "influxdb.point",
+		Usage: `influxdb point name`,
+		Value: "quorumTpsMon",
+	}
+	InfluxdbTagsFlag = cli.StringFlag{
+		Name:  "influxdb.tags",
+		Usage: `influxdb tags (comma separated list of key=value pairs)`,
+		Value: "system=quorum,comp=tps",
+	}
 	ConsensusFlag = cli.StringFlag{
 		Name:  "consensus",
 		Usage: `name of consensus ("raft", "ibft")`,

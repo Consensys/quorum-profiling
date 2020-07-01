@@ -29,23 +29,24 @@ func (t TPSRecord) ReportString() string {
 
 // TPSMonitor implements a monitor service
 type TPSMonitor struct {
-	isRaft         bool                   // represents consensus
-	bdCh           chan *reader.BlockData // block data from chain
-	chainReader    *reader.GethClient     // ethereum chainReader
-	tpsRecs        []TPSRecord            // list of TPS data points recorded
-	report         string                 // report name to store TPS data points
-	fromBlk        uint64                 // from block number
-	toBlk          uint64                 // to block number
-	stopc          chan struct{}          // stop channel
-	firstBlkTime   *time.Time             // first block's time
-	refTime        time.Time              // reference time
-	refTimeNext    time.Time              // next expected reference time
-	blkTimeNext    time.Time              // next expected block time
-	blkCnt         uint64
-	txnsCnt        uint64   // total transaction count
-	rptFile        *os.File // report file
-	awsService     *AwsCloudwatchService
-	promethService *PrometheusMetricsService
+	isRaft          bool                   // represents consensus
+	bdCh            chan *reader.BlockData // block data from chain
+	chainReader     *reader.GethClient     // ethereum chainReader
+	tpsRecs         []TPSRecord            // list of TPS data points recorded
+	report          string                 // report name to store TPS data points
+	fromBlk         uint64                 // from block number
+	toBlk           uint64                 // to block number
+	stopc           chan struct{}          // stop channel
+	firstBlkTime    *time.Time             // first block's time
+	refTime         time.Time              // reference time
+	refTimeNext     time.Time              // next expected reference time
+	blkTimeNext     time.Time              // next expected block time
+	blkCnt          uint64
+	txnsCnt         uint64   // total transaction count
+	rptFile         *os.File // report file
+	awsService      *AwsCloudwatchService
+	promethService  *PrometheusMetricsService
+	influxdbService *InfluxdbMetricsService
 }
 
 // Date format to show only hour and minute
@@ -53,17 +54,18 @@ const (
 	dateFmtMinSec = "01 Jan 2006 15:04:05"
 )
 
-func NewTPSMonitor(awsService *AwsCloudwatchService, promethService *PrometheusMetricsService, isRaft bool, report string, frmBlk uint64, toBlk uint64, httpendpoint string) *TPSMonitor {
+func NewTPSMonitor(awsService *AwsCloudwatchService, promethService *PrometheusMetricsService, influxdbService *InfluxdbMetricsService, isRaft bool, report string, frmBlk uint64, toBlk uint64, httpendpoint string) *TPSMonitor {
 	bdCh := make(chan *reader.BlockData, 1)
 	tm := &TPSMonitor{
-		isRaft:         isRaft,
-		report:         report,
-		bdCh:           bdCh,
-		fromBlk:        frmBlk,
-		toBlk:          toBlk,
-		stopc:          make(chan struct{}),
-		awsService:     awsService,
-		promethService: promethService,
+		isRaft:          isRaft,
+		report:          report,
+		bdCh:            bdCh,
+		fromBlk:         frmBlk,
+		toBlk:           toBlk,
+		stopc:           make(chan struct{}),
+		awsService:      awsService,
+		promethService:  promethService,
+		influxdbService: influxdbService,
 	}
 	tm.chainReader = reader.NewGethClient(httpendpoint, bdCh, tm.stopc)
 	if tm.report != "" {
@@ -184,6 +186,8 @@ func (tm *TPSMonitor) readBlock(block *reader.BlockData) {
 		go tm.putMetricsInAws(tm.blkTimeNext, fmt.Sprintf("%v", tps), fmt.Sprintf("%v", tm.txnsCnt), fmt.Sprintf("%v", tm.blkCnt))
 		//publish metrics to prometheus
 		go tm.putMetricsInPrometheus(tm.blkTimeNext, tps, tm.txnsCnt, tm.blkCnt)
+		//publish metrics to influxdb
+		go tm.putMetricsInInfluxdb(tm.blkTimeNext, tps, tm.txnsCnt, tm.blkCnt)
 		tm.refTimeNext = tm.refTimeNext.Add(time.Second)
 		tm.blkTimeNext = tm.blkTimeNext.Add(time.Second)
 	}
@@ -249,5 +253,11 @@ func (tm *TPSMonitor) printTPS() {
 func (tm *TPSMonitor) putMetricsInPrometheus(tmRef time.Time, tps uint64, txnCnt uint64, blkCnt uint64) {
 	if tm.promethService != nil {
 		tm.promethService.publishMetrics(tmRef, tps, txnCnt, blkCnt)
+	}
+}
+
+func (tm *TPSMonitor) putMetricsInInfluxdb(t time.Time, tps uint64, txnsCnt uint64, blkCnt uint64) {
+	if tm.influxdbService != nil {
+		tm.influxdbService.PushMetrics(t, tps, txnsCnt, blkCnt)
 	}
 }
