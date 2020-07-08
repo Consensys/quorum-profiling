@@ -48,7 +48,7 @@ func testTPS(isRaft bool, t *testing.T) {
 
 	defer os.Remove(tempFile)
 
-	tm := NewTPSMonitor(nil, nil, isRaft, tempFile, 1, 10, "")
+	tm := NewTPSMonitor(nil, nil, nil, isRaft, tempFile, 1, 10, "")
 
 	assert.NotNil(tm, "creating tps monitor failed")
 

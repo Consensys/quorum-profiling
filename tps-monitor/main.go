@@ -108,10 +108,12 @@ func tps(ctx *cli.Context) error {
 		if influxdbService, err = tpsmon.NewInfluxdbService(influxdbEndpoint, influxdbToken, influxdbOrg, influxdbBucket, influxdbPoint, influxdbTags); err != nil {
 			log.Fatalf("failed to create influxdb service err %v", err)
 		}
+		log.Info("influxdb service created.")
 	}
 
 	if prometheusPort > 0 {
 		promethService = tpsmon.NewPrometheusMetricsService(prometheusPort)
+		log.Info("prometheus service created.")
 	}
 
 	fromBlk := ctx.GlobalUint64(tpsmon.FromBlockFlag.Name)

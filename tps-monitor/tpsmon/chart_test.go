@@ -1,6 +1,7 @@
 package tpsmon
 
 import (
+	"github.com/stretchr/testify/assert"
 	"image/color"
 	"math/rand"
 	"strconv"
@@ -73,6 +74,7 @@ func TestSimpleComparisonChart(t *testing.T) {
 	if err := p.Save(10*vg.Inch, 10*vg.Inch, "/tmp/tps.png"); err != nil {
 		panic(err)
 	}
+	assert.NoError(t, err)
 
 }
 func TestSimpleComparisonChart1(t *testing.T) {
@@ -136,7 +138,7 @@ func TestSimpleComparisonChart1(t *testing.T) {
 	if err := p.Save(10*vg.Inch, 5*vg.Inch, "/tmp/tps2.png"); err != nil {
 		panic(err)
 	}
-
+	assert.NoError(t, err)
 	t2 := time.Now().Sub(t1).Milliseconds()
 	t.Logf("time taken: %d\n", t2)
 

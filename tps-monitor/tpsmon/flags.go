@@ -31,6 +31,7 @@ var (
 	InfluxdbEndpointFlag = cli.StringFlag{
 		Name:  "influxdb.endpoint",
 		Usage: `Influxdb endpoint`,
+		Value: "http://localhost:8086",
 	}
 
 	InfluxdbTokenFlag = cli.StringFlag{
@@ -46,11 +47,12 @@ var (
 	InfluxdbBucketFlag = cli.StringFlag{
 		Name:  "influxdb.bucket",
 		Usage: `Influxdb bucket or database name`,
+		Value: "telegraf",
 	}
 	InfluxdbPointNameFlag = cli.StringFlag{
-		Name:  "influxdb.point",
-		Usage: `Influxdb point name`,
-		Value: "quorumTpsMon",
+		Name:  "influxdb.measurement",
+		Usage: `Influxdb measurement name`,
+		Value: "quorum_tps",
 	}
 	InfluxdbTagsFlag = cli.StringFlag{
 		Name:  "influxdb.tags",

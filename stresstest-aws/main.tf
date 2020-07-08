@@ -116,16 +116,19 @@ variable "aws_num_of_nodes_in_network" {
 locals {
   network_name              = var.aws_network_name == "" ? basename(abspath(path.module)) : var.aws_network_name
   generated_dir             = "build"
+  node_scripts_src_dir      = "scripts/node"
   tmkeys_generated_dir      = "${local.generated_dir}/${local.network_name}/tmkeys"
+  generated_home_dir      = "${local.generated_dir}/${local.network_name}"
   accountkeys_generated_dir = "${local.generated_dir}/${local.network_name}/accountkeys"
   tm_dir_container_path     = "/data/tm"
   qdata_dir_container_path  = "/data/qdata"
   qdata_dir_vm_path         = "/data/qdata"
   tm_dir_vm_path            = "/data/tm"
   wrk_stresstest_home_path  = "~/stresstest"
-  node_monitor_home_path  = "~/monitor"
-  stresstest_src_path        = "jmeter-test"
-  wrk_stresstest_gen_dir      = "${local.generated_dir}/${local.network_name}/stresstest"
+  node_monitor_home_path    = "~/monitor"
+  stresstest_src_path       = "jmeter-test"
+  wrk_stresstest_gen_dir    = "${local.generated_dir}/${local.network_name}/stresstest"
+  wrk_scripts_src_dir       = "scripts/test"
   node_dir_prefix           = "node-"
   tm_dir_prefix             = "tm-"
   geth_addt_args            = ( var.geth19 ? "--allow-insecure-unlock" : "")
@@ -149,7 +152,8 @@ locals {
   host_ws_port                  = 8546
   host_tm_p2p_port              = 9000
   host_tm_third_party_port      = 9080
-  host_prometheus_port          = 2112
+  host_tps_prometheus_port      = 2112
+  host_telegraf_prometheus_port = 9126
 }
 
 # randomize the docker network cidr
@@ -204,9 +208,6 @@ output "pvt_ips_eth_accts" {
   value = formatlist("%s,%s", aws_instance.node[*].private_ip, quorum_bootstrap_keystore.accountkeys-generator[*].account[0].address)
 }
 
-output "namedKeyAllocation" {
-  value = local.tmNamedKeyAllocation
-}
 
 output "test" {
   value = aws_instance.wrk.public_dns

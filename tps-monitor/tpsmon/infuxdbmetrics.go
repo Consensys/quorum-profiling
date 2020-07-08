@@ -28,7 +28,7 @@ func NewInfluxdbService(ep string, token string, org string, bucket string, poin
 		return nil, err
 	}
 	tagsMap := stringToTags(tags)
-	log.Infof("Influxdb: endpoint:%s token:%s org:%s bucket:%s point:%s tags:%v\n", ep, token, org, bucket, point, tagsMap)
+	log.Debugf("Influxdb: endpoint:%s token:%s org:%s bucket:%s point:%s tags:%v\n", ep, token, org, bucket, point, tagsMap)
 	is := &InfluxdbMetricsService{endpoint: ep, token: token, org: org, bucket: bucket, point: point, tags: tagsMap}
 	is.makeClient()
 	return is, nil

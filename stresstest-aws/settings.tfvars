@@ -2,16 +2,17 @@ aws_region = "ap-southeast-1"
 aws_profile = "amal-sbox"
 #aws_profile = "default"
 aws_user = "l1-developers/f050437"
-aws_network_name = "run5-raft-q260"
+aws_network_name = "r1-raft"
 // aws instance type
-aws_instance_type = "t2.xlarge"
+aws_instance_type = "t3a.2xlarge"
 aws_num_of_nodes_in_network = 4
 // disk storage size for each node
-aws_volume_size = 50
+aws_volume_size = 100
 aws_vpc_id = "vpc-0fdc784976577e73b"
 
 // consensus and block period
 blockPeriod = 250
+// consensus - raft or ibft
 consensus = "raft"
 
 // txpool.accountslots/gloablslots/globalqueue size at geth commandline for all nodes
@@ -23,7 +24,7 @@ quorum_docker_image = "quorumengineering/quorum:latest"
 // docker image of tessera
 tessera_docker_image = "quorumengineering/tessera:0.11"
 
-tps_docker_image = "amalrajmani/tpsmonitor:v3"
+tps_docker_image = "amalrajmani/tpsmonitor:v1"
 jmeter_docker_image = "amalrajmani/jmeter:5.2.1"
 
 // jmeter test profile type you want to run
