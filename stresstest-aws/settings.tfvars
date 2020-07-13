@@ -36,7 +36,7 @@ gasLimit = 37500000
 // no of threads jmeter test profile should run
 jmeter_no_of_threads = 1
 // duration of jemetr test profile run in seconds
-jmeter_duration_of_run = 18000
+jmeter_duration_of_run = 600
 
 // no of transactions to be sent per minute to quorum - for 1node and 4node jmeter test profiles
 jmeter_throughput = 60000

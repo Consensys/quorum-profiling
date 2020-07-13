@@ -393,42 +393,6 @@ resource "aws_cloudwatch_log_group" "quorum" {
   }
 }
 
-/*
-resource "local_file" "node_monitor_sh" {
-  filename = format("%s/start-monitor.sh", local.generated_dir)
-  content  = <<-EOF
-#!/bin/bash
-region="${var.aws_region}"
-nprefix="${var.aws_network_name}"
-ts=`date +"%d%m%Y%H%M%S"`
-lf="node_monitor_$ts.log"
-while true
-do
-timeStamp=`date +'%d/%m/%Y %H:%M:%S'`
-GETH_CPU=$( sudo docker stats --no-stream | grep "$nprefix-node" | awk '{printf "%.2f", $3}' )
-GETH_MEM=$( sudo docker stats --no-stream | grep "$nprefix-node" | awk '{printf "%.2f", $7}' )
-TM_CPU=$( sudo docker stats --no-stream | grep "$nprefix-tm" | awk '{printf "%.2f", $3}' )
-TM_MEM=$( sudo docker stats --no-stream | grep "$nprefix-tm" | awk '{printf "%.2f", $7}' )
-INSTANCEID="CpuMemMonitor"
-NSID=$(ec2-metadata -v|awk '{printf $2}')
-echo $timeStamp,$INSTANCEID,$GETH_CPU,$GETH_MEM,$TM_CPU,$TM_MEM >> $lf
-aws cloudwatch put-metric-data --region $region --metric-name "geth-CPU%" --dimensions System=$INSTANCEID  --namespace "$nprefix-$NSID" --value $GETH_CPU
-aws cloudwatch put-metric-data --region $region --metric-name "geth-MEM%" --dimensions System=$INSTANCEID  --namespace "$nprefix-$NSID" --value $GETH_MEM
-aws cloudwatch put-metric-data --region $region --metric-name "tm-CPU%" --dimensions System=$INSTANCEID  --namespace "$nprefix-$NSID" --value $TM_CPU
-aws cloudwatch put-metric-data --region $region --metric-name "tm-MEM%" --dimensions System=$INSTANCEID  --namespace "$nprefix-$NSID" --value $TM_MEM
-sleep $1
-done
-EOF
-}
-*/
-
-/*resource "local_file" "node_monitor_start_sh" {
-  filename = format("%s/start.sh", local.generated_dir)
-  content  = <<-EOF
-#!/bin/bash
-nohup ./node_monitor.sh 30 &
-EOF
-}*/
 
 resource "null_resource" "publish" {
   count = local.number_of_nodes
@@ -477,17 +441,6 @@ resource "null_resource" "publish" {
     destination = local.tm_dir_vm_path
   }
 
-/*  provisioner "file" {
-    content = local_file.node_monitor_sh.content
-    destination = "~/monitor/node_monitor.sh"
-  }
-
-  provisioner "file" {
-    content = local_file.node_monitor_start_sh.content
-    destination = format("%s/start.sh", local.node_monitor_home_path)
-  }*/
-
-
 
   provisioner "remote-exec" {
     inline = [
@@ -514,7 +467,7 @@ EOF
 }
 
 resource "local_file" "prometheus_yaml" {
-  filename = format("%s/prometheus.yaml", local.wrk_stresstest_gen_dir)
+  filename = format("%s/prometheus.yml", local.wrk_stresstest_gen_dir)
   content = <<-EOF
 # my global config
 global:
@@ -526,8 +479,9 @@ scrape_configs:
     scrape_interval: 20s
     static_configs:
       - targets: [
+        '${aws_instance.wrk.private_ip}:2112',
 %{for i in data.null_data_source.meta[*].inputs.idx~}
-        'http://${aws_instance.node[i].private_ip}:9126',
+        '${aws_instance.node[i].private_ip}:9126',
 %{endfor~}
       ]
 
@@ -601,7 +555,7 @@ influxdburl=http://${aws_instance.wrk.private_ip}:8086/write?db=telegraf
 
 #for single node test
 url=${aws_instance.node[0].private_ip}
-port=8545
+port=${local.host_rpc_port}
 from=${quorum_bootstrap_keystore.accountkeys-generator[0].account[0].address}
 privateFor="${quorum_transaction_manager_keypair.tm[1].public_key_b64}"
 
@@ -609,7 +563,7 @@ privateFor="${quorum_transaction_manager_keypair.tm[1].public_key_b64}"
 %{for i in data.null_data_source.meta[*].inputs.idx~}
 #node${i + 1}
 url${i + 1}=${aws_instance.node[i].private_ip}
-port${i + 1}=8545
+port${i + 1}=${local.host_rpc_port}
 from${i + 1}=${quorum_bootstrap_keystore.accountkeys-generator[i].account[0].address}
 privateFor${i + 1}="${quorum_transaction_manager_keypair.tm[(i+1 == length(data.null_data_source.meta) ? 0 : i + 1)].public_key_b64}"
 
