@@ -393,6 +393,40 @@ resource "aws_cloudwatch_log_group" "quorum" {
   }
 }
 
+resource "local_file" "node_monitor_sh" {
+  filename = format("%s/start-monitor.sh", local.generated_dir)
+  content  = <<-EOF
+#!/bin/bash
+region="${var.aws_region}"
+nprefix="${var.aws_network_name}"
+ts=`date +"%d%m%Y%H%M%S"`
+lf="node_monitor_$ts.log"
+while true
+do
+timeStamp=`date +'%d/%m/%Y %H:%M:%S'`
+GETH_CPU=$( sudo docker stats --no-stream | grep "$nprefix-node" | awk '{printf "%.2f", $3}' )
+GETH_MEM=$( sudo docker stats --no-stream | grep "$nprefix-node" | awk '{printf "%.2f", $7}' )
+TM_CPU=$( sudo docker stats --no-stream | grep "$nprefix-tm" | awk '{printf "%.2f", $3}' )
+TM_MEM=$( sudo docker stats --no-stream | grep "$nprefix-tm" | awk '{printf "%.2f", $7}' )
+INSTANCEID="CpuMemMonitor"
+NSID=$(ec2-metadata -v|awk '{printf $2}')
+echo $timeStamp,$INSTANCEID,$GETH_CPU,$GETH_MEM,$TM_CPU,$TM_MEM >> $lf
+aws cloudwatch put-metric-data --region $region --metric-name "geth-CPU%" --dimensions System=$INSTANCEID  --namespace "$nprefix-$NSID" --value $GETH_CPU
+aws cloudwatch put-metric-data --region $region --metric-name "geth-MEM%" --dimensions System=$INSTANCEID  --namespace "$nprefix-$NSID" --value $GETH_MEM
+aws cloudwatch put-metric-data --region $region --metric-name "tm-CPU%" --dimensions System=$INSTANCEID  --namespace "$nprefix-$NSID" --value $TM_CPU
+aws cloudwatch put-metric-data --region $region --metric-name "tm-MEM%" --dimensions System=$INSTANCEID  --namespace "$nprefix-$NSID" --value $TM_MEM
+sleep $1
+done
+EOF
+}
+
+resource "local_file" "node_monitor_start_sh" {
+  filename = format("%s/start.sh", local.generated_dir)
+  content  = <<-EOF
+#!/bin/bash
+nohup ./node_monitor.sh 30 &
+EOF
+}
 
 resource "null_resource" "publish" {
   count = local.number_of_nodes
@@ -441,6 +475,15 @@ resource "null_resource" "publish" {
     destination = local.tm_dir_vm_path
   }
 
+  provisioner "file" {
+    content = local_file.node_monitor_sh.content
+    destination = format("%s/node_monitor.sh", local.node_monitor_home_path)
+  }
+
+  provisioner "file" {
+    content = local_file.node_monitor_start_sh.content
+    destination = format("%s/start.sh", local.node_monitor_home_path)
+  }
 
   provisioner "remote-exec" {
     inline = [
@@ -451,6 +494,8 @@ resource "null_resource" "publish" {
       "echo 'start telegraf metrics - node ${count.index}'",
       "cd ${local.node_monitor_home_path} && sudo /usr/local/bin/docker-compose -f docker-compose-telegraf.yaml up -d",
       "sleep 5", // avoid connection shutting down before processes start up
+      "if [ ${count.index} -eq 0 ]; then echo 'start monitor script node ${count.index}';cd ${local.node_monitor_home_path};./start.sh; sleep 5; fi",
+      "sleep 2",
     ]
   }
 }
@@ -579,7 +624,7 @@ resource "local_file" "start_tps_sh" {
   content  = <<-EOF
 #!/bin/bash
 echo "start tps monitor..."
-sudo docker run -d -v ${local.wrk_stresstest_home_path}:/stresstest -p ${local.host_tps_port}:${local.host_tps_port} -p ${local.host_tps_prometheus_port}:${local.host_tps_prometheus_port} --name tps-monitor --log-driver=awslogs --log-opt awslogs-region=${var.aws_region} --log-opt awslogs-group=${aws_cloudwatch_log_group.quorum.name} --log-opt awslogs-stream=tpsmonitor ${var.tps_docker_image}  --httpendpoint http://${aws_instance.node[0].private_ip}:${local.host_rpc_port} --consensus=${var.consensus} --report /stresstest/tps-report.csv --prometheusport ${local.host_tps_prometheus_port} --port ${local.host_tps_port} --influxdb --influxdb.endpoint "http://${aws_instance.wrk.private_ip}:8086" --influxdb.token "telegraf:test123"
+sudo docker run -d -v ${local.wrk_stresstest_home_path}:/stresstest -p ${local.host_tps_port}:${local.host_tps_port} -p ${local.host_tps_prometheus_port}:${local.host_tps_prometheus_port} --name tps-monitor --log-driver=awslogs --log-opt awslogs-region=${var.aws_region} --log-opt awslogs-group=${aws_cloudwatch_log_group.quorum.name} --log-opt awslogs-stream=tpsmonitor ${var.tps_docker_image} --awsmetrics --awsregion ${var.aws_region} --awsnetwork ${var.aws_network_name} --awsinst ${aws_instance.node[0].public_ip} --httpendpoint http://${aws_instance.node[0].private_ip}:${local.host_rpc_port} --consensus=${var.consensus} --report /stresstest/tps-report.csv --prometheusport ${local.host_tps_prometheus_port} --port ${local.host_tps_port} --influxdb --influxdb.endpoint "http://${aws_instance.wrk.private_ip}:8086" --influxdb.token "telegraf:test123"
 echo "tps monitor started"
 EOF
 }
