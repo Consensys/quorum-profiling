@@ -1,23 +1,32 @@
 ## Quorum Test
-> Quorum Test is intended to be used for stress testing Quorum
+> Quorum Test contains tools that can be used to run stress test in a Quorum network and measure/monitor TPS, Jmeter test and CPU/Memory usage metrics in different scenarios.
 
-Quorum Test suite can be used to do the following:
-* It can be used to bootstrap a Quorum network in AWS cloud and run stress test & measure TPS on it.  
-* It has Jmeter test profiles which can be executed manually in a Quorum network.
-* It has TPS Monitor which can be used to measure TPS in a Quorum network.
+It can be used to do the following:
+1. It can be used to spin up a Quorum network in AWS cloud and run stress test & measure TPS on it.  
+1. It has Jmeter test profiles which can be executed manually in an existing Quorum network.
+1. It has TPS Monitor which can be used to measure TPS in an existing Quorum network.
+1. It can be used for development purposes to test quorum network running locally in laptop/desktop.
 
 
-### Prerequisites
-Download Terraform runtime to your machine:
-* From [HashiCorp website](https://www.terraform.io/downloads.html)
-* MacOS: `brew install terraform`
+### Scenario1 - Testing new Quorum network in AWS with Jmeter test profile
+Use this when you want to spin up a quorum network in AWS and run some tests on it and measure/monitor TPS, Jmeter test and CPU & Memory usage metrics.
 
-Download Jmeter to your machine:
-* From [Jmeter website](https://jmeter.apache.org/download_jmeter.cgi)
-* MacOS: `brew install jmeter`
+Refer [testing Quorum in AWS](stresstest-aws/README.md) for more details on how to use it.
 
-### Getting Started
-* [Testing in AWS](stresstest-aws/README.md): 
-It deploys (using terraform) a quorum network in AWS and runs Jmeter test & TPS monitor in AWS automatically.
-* [JMeter Test Profiles](stresstest-aws/jmeter-test/README.md): It contains Jmeter test profiles that can be executed manually on a quorum network.
-* [TPS Monitor](tps-monitor/README.md): TPS monitor process can be used to measure TPS in a quorum network.
+### Scenario2 - Testing an existing Quorum network with Jmeter test profile
+Use this when you want to run Jmeter test profile in an existing Quorum network.
+
+Refer [testing Quorum with JMeter Test Profiles](stresstest-aws/jmeter-test/README.md) for more details on how to use it.
+
+### Scenario3 - Measuring TPS in an existing Quorum network
+Use this when you want to measure TPS in an existing Quorum network.
+
+Refer [measuring TPS in Quorum](tps-monitor/README.md) for more details on how to use it.
+
+
+### Scenario4 - Testing locally
+Use this when you want to run Jmeter test profile and measure TPS in an existing Quorum network running locally.
+
+Refer [running locally](scripts/README.md) for more details on how to use it.
+
+

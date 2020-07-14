@@ -6,7 +6,7 @@ aws_network_name = "r1-raft"
 // aws instance type
 aws_instance_type = "t3a.2xlarge"
 aws_num_of_nodes_in_network = 4
-// disk storage size for each node
+// disk storage size for each node in GB
 aws_volume_size = 100
 aws_vpc_id = "vpc-0fdc784976577e73b"
 
@@ -36,7 +36,7 @@ gasLimit = 37500000
 // no of threads jmeter test profile should run
 jmeter_no_of_threads = 1
 // duration of jemetr test profile run in seconds
-jmeter_duration_of_run = 600
+jmeter_duration_of_run = 1800
 
 // no of transactions to be sent per minute to quorum - for 1node and 4node jmeter test profiles
 jmeter_throughput = 60000
