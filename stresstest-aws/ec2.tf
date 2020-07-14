@@ -136,15 +136,6 @@ resource "aws_security_group" "external" {
     ]
   }
 
-  ingress {
-    from_port = 9090
-    protocol  = "tcp"
-    to_port   = 9090
-    description = format("Reason: Allow access to prometheus from myIP by: %s", var.aws_user)
-    cidr_blocks = [
-      "${chomp(data.http.myIpAddr.body)}/32"
-    ]
-  }
 
   tags = {
     Name = local.network_name
@@ -511,27 +502,6 @@ ${aws_instance.node[i].private_ip},${local.host_rpc_port},${quorum_bootstrap_key
 EOF
 }
 
-resource "local_file" "prometheus_yaml" {
-  filename = format("%s/prometheus.yml", local.wrk_stresstest_gen_dir)
-  content = <<-EOF
-# my global config
-global:
-  scrape_interval:     10s
-  evaluation_interval: 10s
-
-scrape_configs:
-  - job_name: 'prometheus'
-    scrape_interval: 20s
-    static_configs:
-      - targets: [
-        '${aws_instance.wrk.private_ip}:2112',
-%{for i in data.null_data_source.meta[*].inputs.idx~}
-        '${aws_instance.node[i].private_ip}:9126',
-%{endfor~}
-      ]
-
-EOF
-}
 
 resource "local_file" "graf_dashboard_yaml" {
   filename = format("%s/graf-datasource.yaml", local.wrk_stresstest_gen_dir)

@@ -34,7 +34,7 @@ then
 else
     echo "All nodes are up"
     echo "starting grafana influxdb and prometheus..."
-    sudo /usr/local/bin/docker-compose -f docker-compose-graf-inflx-prom.yml up -d
+    sudo /usr/local/bin/docker-compose -f docker-compose-graf-inflx.yml up -d
     ./start-jmeter-test.sh
     ./start-tps.sh
 fi
