@@ -11,7 +11,7 @@ services:
     ports:
       - 9126:9126
     volumes:
-      - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /sys:/rootfs/sys:ro
       - /proc:/rootfs/proc:ro
@@ -29,10 +29,10 @@ services:
       - monitoring
     volumes:
       - grafana-volume:/var/lib/grafana
-      - ./graf-datasource.yaml:/etc/grafana/provisioning/datasources/qrm-datasource.yaml
-      - ./graf-dashboard.yaml:/etc/grafana/provisioning/dashboards/qrm-dashboard.yaml
-      - ./quorum-test-dashboard.json:/etc/grafana/provisioning/dashboards/quorum-tps-dashboard.json
-      - ./quorum-jmeter-dashboard.json:/etc/grafana/provisioning/dashboards/quorum-jmeter-dashboard.json
+      - ./grafana/graf-datasource.yaml:/etc/grafana/provisioning/datasources/qrm-datasource.yaml
+      - ./grafana/graf-dashboard.yaml:/etc/grafana/provisioning/dashboards/qrm-dashboard.yaml
+      - ./grafana/quorum-test-dashboard.json:/etc/grafana/provisioning/dashboards/quorum-tps-dashboard.json
+      - ./grafana/quorum-jmeter-dashboard.json:/etc/grafana/provisioning/dashboards/quorum-jmeter-dashboard.json
     depends_on:
       - influxdb
 
@@ -59,9 +59,9 @@ services:
     container_name: monitoring_prometheus
     restart: unless-stopped
     volumes:
-      - ./data/prometheus/config:/etc/prometheus/
-      - ./data/prometheus/data:/prometheus
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/data/prometheus/config:/etc/prometheus/
+      - ./prometheus/data/prometheus/data:/prometheus
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     command:
       - --config.file=/etc/prometheus/prometheus.yml
     ports:
