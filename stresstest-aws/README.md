@@ -9,6 +9,8 @@
  It creates `test` node(for running Jmeter test, tps monitor, `influxdb` and `grafana`).
  The logs of `geth`, `tessera`, `jmeter` and `tpsmonitor` can be viewed under cloudwatch > Log groups > `/quorum/<network_name>`
  
+ Also, CPU/Memory usage of first node (`node0`) and TPS metrics in pushed to AWS metrics. These metrics can be viewed under AWS cloudwatch > custom namespaces with namespace `<network_name>-<pulbicIp Of node0>`. The metrics names are self-explanatory.
+ 
  ##### Grafana dashboard 
  It can be accessed at `http://<testNode url>:3000/login`. Enter `admin/admin` and access predefined dashboards `Quorum TEST Dashboard` & `Quorum TEST Jmeter Dashboard`
  
@@ -87,6 +89,17 @@ jmeter_throughput = 96000
 jmeter_public_throughput = 12000
 jmeter_private_throughput = 2400
 ```
+
+## Usage
+ - `git clone https://github.com/QuorumEngineering/quorum-test.git`
+ - `cd quorum-test/stresstest-aws`
+ - edit `settings.tfvars` and configure parameters for stress test
+ - Run `terraform init` to initialize
+ - To start the stress test, update `setting.tfvars` with preferred config.
+ Run `terraform apply -var-file settings.tfvars`. 
+ - Once testing is done, destroy the environment by running `terraform destroy -var-file settings.tfvars`.
+
+
  ## Test Profiles
  Jmeter is used to run the test profiles. 
  The objective is to test performance and robustness of quorum under high volume of transactions over a longer duration.
@@ -117,6 +130,25 @@ Private transactions have only one participants in `privateFor` by default.
 ## Logs
 Logs of `geth`,`tessera`, `jmeter` and `tpsmonitor` processes can be viewed under Cloudwatch Logs > log group > `/quorum/<network_name>`
 
+## AWS - Cloudwatch metrics
+ It can be viewed under AWS cloudwatch > custom namespaces with namespace `<network_name>-<pulbicIp Of node0>`. 
+ The metric details are as follows:
+ - `system=CpuMemMonitor`
+ 
+ | Metric name | Description |
+ | :----------- |:----------- |
+ | geth-MEM% | geth memory usage |
+ | geth-CPU% | geth cpu usage |
+ | tm-CPU%   | cpu usage    |
+ | tm-MEM%   | tessera memory usage |
+
+ - `System=TpsMonitor`
+ 
+ | Metric name | Description |
+  | :----------- | :----------- |
+  | TPS | transactions per second |
+  | TxnCount  | total transactions count   |
+  | BlockCount   | total block count |
 
 
 ### TPS Data/Chart
@@ -131,20 +163,12 @@ localTime,refTime,TPS,TxnCount,BlockCount
 06 May 2020 10:55,00:00:05,723,217077,1202
 06 May 2020 10:56,00:00:06,723,260370,1442
 ```
-You can view TPS graph from http endpoint `http://<test-node>:7575/tpschart?iw=15&ih=5`. 
+You can also view TPS graph from http endpoint `http://<test-node>:7575/tpschart?iw=15&ih=5`. 
 - `iw` - width of image
 - `ih` - height of image
 
  ![Sample TPSChart](TPSChart.jpeg)  
  
- ## Usage
- - `git clone https://github.com/QuorumEngineering/quorum-test.git`
- - `cd quorum-test/stresstest-aws`
- - edit `settings.tfvars` and configure parameters for stress test
- - Run `terraform init` to initialize
- - To start the stress test, update `setting.tfvars` with preferred config.
- Run `terraform apply -var-file settings.tfvars`. 
- - Once testing is done, destroy the environment by running `terraform destroy -var-file settings.tfvars`.
- 
+  
 
      
