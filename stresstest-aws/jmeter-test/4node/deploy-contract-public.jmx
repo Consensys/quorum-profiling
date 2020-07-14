@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.0 r1840935">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.2.1">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Deploy public contract - 4node" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
@@ -23,6 +23,7 @@
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Node 1" enabled="true">
@@ -138,7 +139,7 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
             <collectionProp name="Arguments.arguments">
               <elementProp name="url1" elementType="Argument">
                 <stringProp name="Argument.name">url1</stringProp>
-                <stringProp name="Argument.value">${__P(url1, 3.10.116.15)}</stringProp>
+                <stringProp name="Argument.value">${__P(url1, 127.0.0.1)}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="port1" elementType="Argument">
@@ -148,7 +149,7 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
               </elementProp>
               <elementProp name="from1" elementType="Argument">
                 <stringProp name="Argument.name">from1</stringProp>
-                <stringProp name="Argument.value">${__P(from1, 0x4204266650c946a56da82dfded6029cd8b1b54cf)}</stringProp>
+                <stringProp name="Argument.value">${__P(from1, 0xed9d02e382b34818e88b88a309c7fe71e65f419d)}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -167,6 +168,7 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.duration">${seconds}</stringProp>
         <stringProp name="ThreadGroup.delay">${delay}</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Node 2" enabled="true">
@@ -282,7 +284,7 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
             <collectionProp name="Arguments.arguments">
               <elementProp name="url2" elementType="Argument">
                 <stringProp name="Argument.name">url2</stringProp>
-                <stringProp name="Argument.value">${__P(url2, 35.176.231.84)}</stringProp>
+                <stringProp name="Argument.value">${__P(url2, 127.0.0.1)}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="port2" elementType="Argument">
@@ -292,7 +294,7 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
               </elementProp>
               <elementProp name="from2" elementType="Argument">
                 <stringProp name="Argument.name">from2</stringProp>
-                <stringProp name="Argument.value">${__P(from2, 0xca40127ac0880f44bca898fd357557b70a2fcc42)}</stringProp>
+                <stringProp name="Argument.value">${__P(from2, 0xca843569e3427144cead5e4d5999a3d0ccf92b8e)}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -311,6 +313,7 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.duration">${seconds}</stringProp>
         <stringProp name="ThreadGroup.delay">${delay}</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Node 3" enabled="true">
@@ -426,7 +429,7 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
             <collectionProp name="Arguments.arguments">
               <elementProp name="url3" elementType="Argument">
                 <stringProp name="Argument.name">url3</stringProp>
-                <stringProp name="Argument.value">${__P(url3, 3.9.17.190)}</stringProp>
+                <stringProp name="Argument.value">${__P(url3, 127.0.0.1)}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="port3" elementType="Argument">
@@ -436,7 +439,7 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
               </elementProp>
               <elementProp name="from3" elementType="Argument">
                 <stringProp name="Argument.name">from3</stringProp>
-                <stringProp name="Argument.value">${__P(from3, 0x53a52871988c3b3856280181105d0541d78b38ac)}</stringProp>
+                <stringProp name="Argument.value">${__P(from3, 0x0fbdc686b912d7722dc86510934589e0aaf3b55a)}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -455,6 +458,7 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.duration">${seconds}</stringProp>
         <stringProp name="ThreadGroup.delay">${delay}</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Node 4" enabled="true">
@@ -570,7 +574,7 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
             <collectionProp name="Arguments.arguments">
               <elementProp name="url4" elementType="Argument">
                 <stringProp name="Argument.name">url4</stringProp>
-                <stringProp name="Argument.value">${__P(url4, 35.178.199.42)}</stringProp>
+                <stringProp name="Argument.value">${__P(url4, 127.0.0.1)}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="port4" elementType="Argument">
@@ -580,7 +584,7 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
               </elementProp>
               <elementProp name="from4" elementType="Argument">
                 <stringProp name="Argument.name">from4</stringProp>
-                <stringProp name="Argument.value">${__P(from4, 0xa13ced78febcac20a8268b796a9e0208c17d8313)}</stringProp>
+                <stringProp name="Argument.value">${__P(from4, 0x9186eb3d20cbd1f5f992a950d808c4495153abd5)}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -592,13 +596,13 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
         <collectionProp name="Arguments.arguments">
           <elementProp name="threads" elementType="Argument">
             <stringProp name="Argument.name">threads</stringProp>
-            <stringProp name="Argument.value">${__P(threads,1)}</stringProp>
+            <stringProp name="Argument.value">${__P(threads,2)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">Number of threads to fire requests</stringProp>
           </elementProp>
           <elementProp name="seconds" elementType="Argument">
             <stringProp name="Argument.name">seconds</stringProp>
-            <stringProp name="Argument.value">${__P(seconds,10)}</stringProp>
+            <stringProp name="Argument.value">${__P(seconds,600)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">Duration of test</stringProp>
           </elementProp>
@@ -610,8 +614,14 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
           </elementProp>
           <elementProp name="throughput" elementType="Argument">
             <stringProp name="Argument.name">throughput</stringProp>
-            <stringProp name="Argument.value">${__P(throughput,6000000)}</stringProp>
+            <stringProp name="Argument.value">${__P(throughput,100000)}</stringProp>
             <stringProp name="Argument.desc">Desire throughput</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="influxdburl" elementType="Argument">
+            <stringProp name="Argument.name">influxdburl</stringProp>
+            <stringProp name="Argument.value">${__P(influxdburl, &quot;test&quot;)}</stringProp>
+            <stringProp name="Argument.desc">influxdb url</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -668,6 +678,59 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
         <stringProp name="throughput">${throughput}</stringProp>
         <intProp name="calcMode">1</intProp>
       </ConstantThroughputTimer>
+      <hashTree/>
+      <BackendListener guiclass="BackendListenerGui" testclass="BackendListener" testname="Backend Listener" enabled="true">
+        <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="influxdbMetricsSender" elementType="Argument">
+              <stringProp name="Argument.name">influxdbMetricsSender</stringProp>
+              <stringProp name="Argument.value">org.apache.jmeter.visualizers.backend.influxdb.HttpMetricsSender</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="influxdbUrl" elementType="Argument">
+              <stringProp name="Argument.name">influxdbUrl</stringProp>
+              <stringProp name="Argument.value">${__P(influxdburl, &quot;test&quot;)}</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="application" elementType="Argument">
+              <stringProp name="Argument.name">application</stringProp>
+              <stringProp name="Argument.value">quorum test</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="measurement" elementType="Argument">
+              <stringProp name="Argument.name">measurement</stringProp>
+              <stringProp name="Argument.value">jmeter</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="summaryOnly" elementType="Argument">
+              <stringProp name="Argument.name">summaryOnly</stringProp>
+              <stringProp name="Argument.value">true</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="samplersRegex" elementType="Argument">
+              <stringProp name="Argument.name">samplersRegex</stringProp>
+              <stringProp name="Argument.value">.*</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="percentiles" elementType="Argument">
+              <stringProp name="Argument.name">percentiles</stringProp>
+              <stringProp name="Argument.value">90;95;99</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="testTitle" elementType="Argument">
+              <stringProp name="Argument.name">testTitle</stringProp>
+              <stringProp name="Argument.value">Quorum test</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="eventTags" elementType="Argument">
+              <stringProp name="Argument.name">eventTags</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+        </elementProp>
+        <stringProp name="classname">org.apache.jmeter.visualizers.backend.influxdb.InfluxdbBackendListenerClient</stringProp>
+      </BackendListener>
       <hashTree/>
     </hashTree>
   </hashTree>

@@ -33,6 +33,8 @@ then
     echo "All nodes are not up. Fix the nodes and then start jmeter test(./start-jmeter-test.sh) and tps monitor(./start-tps.sh) manually."
 else
     echo "All nodes are up"
+    echo "starting grafana influxdb and prometheus..."
+    sudo /usr/local/bin/docker-compose -f docker-compose-graf-inflx.yml up -d
     ./start-jmeter-test.sh
     ./start-tps.sh
 fi

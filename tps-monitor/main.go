@@ -3,14 +3,12 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/QuorumEngineering/quorum-test/tps-monitor/tpsmon"
+	log "github.com/sirupsen/logrus"
+	"gopkg.in/urfave/cli.v1"
 	"os"
 	"os/signal"
 	"syscall"
-
-	log "github.com/sirupsen/logrus"
-
-	"github.com/QuorumEngineering/quorum-test/tps-monitor/tpsmon"
-	"gopkg.in/urfave/cli.v1"
 )
 
 var (
@@ -28,6 +26,14 @@ var (
 		tpsmon.AwsNwNameFlag,
 		tpsmon.AwsInstanceFlag,
 		tpsmon.PrometheusPortFlag,
+
+		tpsmon.InfluxdbEnabledFlag,
+		tpsmon.InfluxdbEndpointFlag,
+		tpsmon.InfluxdbTokenFlag,
+		tpsmon.InfluxdbOrgFlag,
+		tpsmon.InfluxdbBucketFlag,
+		tpsmon.InfluxdbPointNameFlag,
+		tpsmon.InfluxdbTagsFlag,
 	}
 )
 
@@ -56,8 +62,18 @@ func tps(ctx *cli.Context) error {
 	awsRegion := ctx.GlobalString(tpsmon.AwsRegionFlag.Name)
 	awsNwName := ctx.GlobalString(tpsmon.AwsNwNameFlag.Name)
 	awsInstance := ctx.GlobalString(tpsmon.AwsInstanceFlag.Name)
-	debugMode := ctx.GlobalBool(tpsmon.DebugFlag.Name)
+
 	prometheusPort := ctx.GlobalInt(tpsmon.PrometheusPortFlag.Name)
+
+	influxdbEnabled := ctx.GlobalBool(tpsmon.InfluxdbEnabledFlag.Name)
+	influxdbEndpoint := ctx.GlobalString(tpsmon.InfluxdbEndpointFlag.Name)
+	influxdbToken := ctx.GlobalString(tpsmon.InfluxdbTokenFlag.Name)
+	influxdbOrg := ctx.GlobalString(tpsmon.InfluxdbOrgFlag.Name)
+	influxdbBucket := ctx.GlobalString(tpsmon.InfluxdbBucketFlag.Name)
+	influxdbPoint := ctx.GlobalString(tpsmon.InfluxdbPointNameFlag.Name)
+	influxdbTags := ctx.GlobalString(tpsmon.InfluxdbTagsFlag.Name)
+
+	debugMode := ctx.GlobalBool(tpsmon.DebugFlag.Name)
 	if httpendpoint == "" {
 		return errors.New("httpendpoint is empty")
 	}
@@ -71,12 +87,33 @@ func tps(ctx *cli.Context) error {
 	}
 	var awsService *tpsmon.AwsCloudwatchService
 	var promethService *tpsmon.PrometheusMetricsService
+	var influxdbService *tpsmon.InfluxdbMetricsService
+	var err error
 	if awsEnabled {
 		awsService = tpsmon.NewCloudwatchService(awsRegion, awsNwName, awsInstance)
+	}
+	if influxdbEnabled {
+		if influxdbEndpoint == "" {
+			log.Fatalf("influxdb endpoint is empty")
+		}
+		if influxdbBucket == "" {
+			log.Fatalf("influxdb bucket is empty")
+		}
+		if influxdbPoint == "" {
+			log.Fatalf("influxdb point name is empty")
+		}
+		if influxdbTags == "" {
+			log.Fatalf("influxdb tags is empty")
+		}
+		if influxdbService, err = tpsmon.NewInfluxdbService(influxdbEndpoint, influxdbToken, influxdbOrg, influxdbBucket, influxdbPoint, influxdbTags); err != nil {
+			log.Fatalf("failed to create influxdb service err %v", err)
+		}
+		log.Info("influxdb service created.")
 	}
 
 	if prometheusPort > 0 {
 		promethService = tpsmon.NewPrometheusMetricsService(prometheusPort)
+		log.Info("prometheus service created.")
 	}
 
 	fromBlk := ctx.GlobalUint64(tpsmon.FromBlockFlag.Name)
@@ -85,7 +122,7 @@ func tps(ctx *cli.Context) error {
 		log.Fatalf("from block is less than to block no")
 	}
 
-	tm := tpsmon.NewTPSMonitor(awsService, promethService, ctx.GlobalString(tpsmon.ConsensusFlag.Name) == "raft", ctx.GlobalString(tpsmon.ReportFileFlag.Name),
+	tm := tpsmon.NewTPSMonitor(awsService, promethService, influxdbService, ctx.GlobalString(tpsmon.ConsensusFlag.Name) == "raft", ctx.GlobalString(tpsmon.ReportFileFlag.Name),
 		fromBlk, toBlk, httpendpoint)
 	startTps(tm)
 	tpsPort := ctx.GlobalInt(tpsmon.TpsPortFlag.Name)

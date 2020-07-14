@@ -1,16 +1,16 @@
 # TPS Monitor
-Tool to monitor transactions per second in Quorum.
+Tool to monitor transactions per second, total transactions and total blocks in Quorum.
 The tool can be used to calculate TPS in one of the two ways given below:
 1. calculate TPS on new blocks inserted to chain - it continuously calculates TPS on new blocks inserted to the chain. 
 2. calculate TPS for a given range of blocks - it calculates TPS for a given range of blocks.
 
-##### In both modes it exposes the TPS data (aggregated at minute level) via http endpoint.
+##### In both modes it exposes the TPS data (aggregated per second) via http endpoint.
 
 ## Building the source
 
 Building tpsmonitor requires Go (version 1.13 or later). 
 You can install it using your favourite package manager. Once the dependencies are installed, run
-`make`
+`make` from dir `quorum-test/tps-monitor`
 
 ## Running `tpsmonitor`
 
@@ -29,9 +29,16 @@ Run `tpsmonitor --help` to see usage.
  | --to |              To block no. It is used to calculate TPS for a given block range |
  | --awsmetrics   |         It enables pushing TPS metrics to aws metrics|
  | --awsregion |       AWS region where tpsmonitor is running|
- | --awsnetwork |      AWS network name of quorum. It is used to form the metric name |
- | --awsinst |         AWS instance name. It is used to form the metric name|
+ | --awsnetwork |      AWS network name of quorum. It is used to form the metric name key |
+ | --awsinst |         AWS instance name. It is used to form the metric name key|
  | --prometheusport |  It enables prometheus metrics. |
+ |   --influxdb     |               enable Influxdb |
+ |  --influxdb.endpoint  |   Influxdb endpoint (default: "http://localhost:8086") |
+ |   --influxdb.token |        Influxdb token or username:password (default: ":") |
+ |   --influxdb.org |          Influxdb org name. default is empty |
+ |   --influxdb.bucket |       Influxdb bucket or database name (default: "telegraf") |
+ |   --influxdb.measurement |  Influxdb measurement name (default: "quorum_tps") |
+ |   --influxdb.tags |         Influxdb tags (comma separated list of key=value pairs) (default: "system=quorum,comp=tps") |
  | --help |              Show help|
 
 AWS - Cloudwatch metrics can be viewed under AWS cloudwatch > custom namespaces with namespace `<network_name>-<instance_name>`. 
@@ -69,11 +76,11 @@ head -20 tps-m.csv
 ```
 ````
 localTime,refTime,TPS,TxnCount,BlockCount
-Mar-23 06:03:01,00:00:00:01,2134,128047,241
-Mar-23 06:03:02,00:00:00:02,2023,242871,479
-Mar-23 06:03:03,00:00:00:03,1958,352613,713
-Mar-23 06:03:04,00:00:00:04,1906,457647,937
-Mar-23 06:03:05,00:00:00:05,1880,564064,1163
+06 May 2020 06:03:01,00:00:00:01,2134,128047,241
+06 May 2020 06:03:02,00:00:00:02,2023,242871,479
+06 May 2020 06:03:03,00:00:00:03,1958,352613,713
+06 May 2020 06:03:04,00:00:00:04,1906,457647,937
+06 May 2020 06:03:05,00:00:00:05,1880,564064,1163
 ````
 #### calculate TPS for a given range of blocks
 Displays TPS calculated in the console for given range of blocks as they are read from the chain. Calculates TPS, total no of blocks and total no of transactions for every minute(for the given block range) and saves these results to the report file.
@@ -91,11 +98,11 @@ http://localhost:8888/tpsdata
 
 ````
 localTime,refTime,TPS,TxnCount,BlockCount
-Mar-23 06:03:01,00:00:00:01,2134,128047,241
-Mar-23 06:03:02,00:00:00:02,2023,242871,479
-Mar-23 06:03:03,00:00:00:03,1958,352613,713
-Mar-23 06:03:04,00:00:00:04,1906,457647,937
-Mar-23 06:03:05,00:00:00:05,1880,564064,1163
+06 May 2020 06:03:01,00:00:00:01,2134,128047,241
+06 May 2020 06:03:02,00:00:00:02,2023,242871,479
+06 May 2020 06:03:03,00:00:00:03,1958,352613,713
+06 May 2020 06:03:04,00:00:00:04,1906,457647,937
+06 May 2020 06:03:05,00:00:00:05,1880,564064,1163
 ````
 
 You can view TPS graph from http endpoint `http://<test-node>:7575/tpschart?iw=15&ih=5`. 

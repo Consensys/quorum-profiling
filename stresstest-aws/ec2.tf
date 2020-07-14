@@ -107,14 +107,35 @@ resource "aws_security_group" "external" {
   }
 
   ingress {
-    from_port = local.host_prometheus_port
+    from_port = local.host_tps_prometheus_port
     protocol  = "tcp"
-    to_port   = local.host_prometheus_port
+    to_port   = local.host_tps_prometheus_port
     description = format("Reason: Allow access to prometheus metrics data from myIP by: %s", var.aws_user)
     cidr_blocks = [
       "${chomp(data.http.myIpAddr.body)}/32"
     ]
   }
+
+  ingress {
+    from_port = 3000
+    protocol  = "tcp"
+    to_port   = 3000
+    description = format("Reason: Allow access to grafana dashboard from myIP by: %s", var.aws_user)
+    cidr_blocks = [
+      "${chomp(data.http.myIpAddr.body)}/32"
+    ]
+  }
+
+  ingress {
+    from_port = 8086
+    protocol  = "tcp"
+    to_port   = 8086
+    description = format("Reason: Allow access to influxdb from myIP by: %s", var.aws_user)
+    cidr_blocks = [
+      "${chomp(data.http.myIpAddr.body)}/32"
+    ]
+  }
+
 
   tags = {
     Name = local.network_name
@@ -293,6 +314,7 @@ systemctl start docker
 curl -L https://github.com/docker/compose/releases/download/1.25.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 
+
 rpm -Uvh https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm
 cat <<JSON > /opt/aws/amazon-cloudwatch-agent/amazon-cloudwatch-agent.json
 {
@@ -424,6 +446,15 @@ resource "null_resource" "publish" {
     ]
   }
 
+  provisioner "file" {
+    content     = local_file.telegraf_file.content
+    destination = format("%s/telegraf.conf", local.node_monitor_home_path)
+  }
+
+  provisioner "file" {
+    source      = format("%s/", local.node_scripts_src_dir)
+    destination = local.node_monitor_home_path
+  }
 
   provisioner "file" {
     source      = format("%s/", quorum_bootstrap_data_dir.datadirs-generator[count.index].data_dir_abs)
@@ -437,7 +468,7 @@ resource "null_resource" "publish" {
 
   provisioner "file" {
     content = local_file.node_monitor_sh.content
-    destination = "~/monitor/node_monitor.sh"
+    destination = format("%s/node_monitor.sh", local.node_monitor_home_path)
   }
 
   provisioner "file" {
@@ -451,7 +482,11 @@ resource "null_resource" "publish" {
       "cd ${local.qdata_dir_vm_path} && sudo /usr/local/bin/docker-compose up -d",
       "sleep 5", // avoid connection shutting down before processes start up
       "sudo chmod 755 ${local.node_monitor_home_path}/*",
+      "echo 'start telegraf metrics - node ${count.index}'",
+      "cd ${local.node_monitor_home_path} && sudo /usr/local/bin/docker-compose -f docker-compose-telegraf.yaml up -d",
+      "sleep 5", // avoid connection shutting down before processes start up
       "if [ ${count.index} -eq 0 ]; then echo 'start monitor script node ${count.index}';cd ${local.node_monitor_home_path};./start.sh; sleep 5; fi",
+      "sleep 2",
     ]
   }
 }
@@ -462,8 +497,52 @@ resource "local_file" "host_acct_csv" {
   content  = <<-EOF
 url,port,from,privateFor
 %{for i in data.null_data_source.meta[*].inputs.idx~}
-${aws_instance.node[i].private_ip},8545,${quorum_bootstrap_keystore.accountkeys-generator[i].account[0].address},"${quorum_transaction_manager_keypair.tm[(i+1 == length(data.null_data_source.meta) ? 0 : i + 1)].public_key_b64}"
+${aws_instance.node[i].private_ip},${local.host_rpc_port},${quorum_bootstrap_keystore.accountkeys-generator[i].account[0].address},"${quorum_transaction_manager_keypair.tm[(i+1 == length(data.null_data_source.meta) ? 0 : i + 1)].public_key_b64}"
 %{endfor~}
+EOF
+}
+
+
+resource "local_file" "graf_dashboard_yaml" {
+  filename = format("%s/graf-datasource.yaml", local.wrk_stresstest_gen_dir)
+  content = <<-EOF
+apiVersion: 1
+
+datasources:
+  - name: InfluxDB
+    type: influxdb
+    access: direct
+    database: telegraf
+    user: telegraf
+    basicAuth: false
+    password:
+    url: http://${aws_instance.wrk.public_ip}:8086
+    jsonData:
+      httpMode: GET
+EOF
+}
+
+
+
+resource "local_file" "telegraf_file" {
+  filename = format("%s/telegraf.conf", local.generated_home_dir)
+  content = <<-EOF
+[[inputs.docker]]
+    endpoint = "unix:///var/run/docker.sock"
+    container_names = []
+    timeout = "5s"
+
+[[outputs.prometheus_client]]
+    listen = ":9126"
+    path   = "/metrics"
+
+[[outputs.influxdb]]
+    urls = ["http://${aws_instance.wrk.private_ip}:8086"]
+    database = "telegraf"
+    skip_database_creation = true
+    timeout  = "5s"
+    username = "telegraf"
+    password = "test123"
 EOF
 }
 
@@ -486,19 +565,22 @@ public.throughput=${var.jmeter_public_throughput}
 private.throughput=${var.jmeter_private_throughput}
 %{endif~}
 
+#to write jmeter test summary to influxdb
+influxdburl=http://${aws_instance.wrk.private_ip}:8086/write?db=telegraf
+
 #for single node test
 url=${aws_instance.node[0].private_ip}
-port=8545
+port=${local.host_rpc_port}
 from=${quorum_bootstrap_keystore.accountkeys-generator[0].account[0].address}
 privateFor="${quorum_transaction_manager_keypair.tm[1].public_key_b64}"
 
 #for multiple nodes
 %{for i in data.null_data_source.meta[*].inputs.idx~}
-#node${i}
-url${i}=${aws_instance.node[i].private_ip}
-port${i}=8545
-from${i}=${quorum_bootstrap_keystore.accountkeys-generator[i].account[0].address}
-privateFor${i}="${quorum_transaction_manager_keypair.tm[(i+1 == length(data.null_data_source.meta) ? 0 : i + 1)].public_key_b64}"
+#node${i + 1}
+url${i + 1}=${aws_instance.node[i].private_ip}
+port${i + 1}=${local.host_rpc_port}
+from${i + 1}=${quorum_bootstrap_keystore.accountkeys-generator[i].account[0].address}
+privateFor${i + 1}="${quorum_transaction_manager_keypair.tm[(i+1 == length(data.null_data_source.meta) ? 0 : i + 1)].public_key_b64}"
 
 %{endfor~}
 
@@ -512,7 +594,7 @@ resource "local_file" "start_tps_sh" {
   content  = <<-EOF
 #!/bin/bash
 echo "start tps monitor..."
-sudo docker run -d -v ${local.wrk_stresstest_home_path}:/stresstest -p ${local.host_tps_port}:${local.host_tps_port} -p ${local.host_prometheus_port}:${local.host_prometheus_port} --name tps-monitor --log-driver=awslogs --log-opt awslogs-region=${var.aws_region} --log-opt awslogs-group=${aws_cloudwatch_log_group.quorum.name} --log-opt awslogs-stream=tpsmonitor ${var.tps_docker_image} --awsmetrics --awsregion ${var.aws_region} --awsnetwork ${var.aws_network_name} --awsinst ${aws_instance.node[0].public_ip} --httpendpoint http://${aws_instance.node[0].private_ip}:${local.host_rpc_port} --consensus=${var.consensus} --report /stresstest/tps-report.csv --prometheusport ${local.host_prometheus_port} --port ${local.host_tps_port}
+sudo docker run -d -v ${local.wrk_stresstest_home_path}:/stresstest -p ${local.host_tps_port}:${local.host_tps_port} -p ${local.host_tps_prometheus_port}:${local.host_tps_prometheus_port} --name tps-monitor --log-driver=awslogs --log-opt awslogs-region=${var.aws_region} --log-opt awslogs-group=${aws_cloudwatch_log_group.quorum.name} --log-opt awslogs-stream=tpsmonitor ${var.tps_docker_image} --awsmetrics --awsregion ${var.aws_region} --awsnetwork ${var.aws_network_name} --awsinst ${aws_instance.node[0].public_ip} --httpendpoint http://${aws_instance.node[0].private_ip}:${local.host_rpc_port} --consensus=${var.consensus} --report /stresstest/tps-report.csv --prometheusport ${local.host_tps_prometheus_port} --port ${local.host_tps_port} --influxdb --influxdb.endpoint "http://${aws_instance.wrk.private_ip}:8086" --influxdb.token "telegraf:test123"
 echo "tps monitor started"
 EOF
 }
@@ -522,7 +604,7 @@ resource "local_file" "start_jmeter_sh" {
   content  = <<-EOF
 #!/bin/bash
 echo "start jmeter profile ${var.jmeter_test_profile}.."
-sudo docker run -d -v ${local.wrk_stresstest_home_path}:/stresstest --name jmeter --log-driver=awslogs --log-opt awslogs-region=${var.aws_region} --log-opt awslogs-group=${aws_cloudwatch_log_group.quorum.name} --log-opt awslogs-stream=jmeter    ${var.jmeter_docker_image} -n -t /stresstest/${var.jmeter_test_profile}.jmx -q /stresstest/network.properties -l /stresstest/result.log -j /stresstest/j.log -e -o /stresstest/tmp/
+sudo docker run -d -v ${local.wrk_stresstest_home_path}:/stresstest --name jmeter --log-driver=awslogs --log-opt awslogs-region=${var.aws_region} --log-opt awslogs-group=${aws_cloudwatch_log_group.quorum.name} --log-opt awslogs-stream=jmeter    ${var.jmeter_docker_image} -n -t /stresstest/${var.jmeter_test_profile}.jmx -q /stresstest/network.properties -j /stresstest/jmeter.log
 echo "jmeter test profile ${var.jmeter_test_profile} started"
 EOF
 }
@@ -557,6 +639,11 @@ resource "null_resource" "wrk_publish" {
 
   provisioner "file" {
     source = format("%s/", local.wrk_stresstest_gen_dir)
+    destination = local.wrk_stresstest_home_path
+  }
+
+  provisioner "file" {
+    source = format("%s/", local.wrk_scripts_src_dir)
     destination = local.wrk_stresstest_home_path
   }
 
