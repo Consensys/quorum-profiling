@@ -4,7 +4,7 @@
  ### Usage
  Update `quorum-test/scripts/jmeter/host_acct.csv` and `quorum-test/scripts/jmeter/network.properties` with details of your quorum network and Jmeter test parameters.
  
- To choose correct Jmeter test profile refer to section _Test profiles_ [here](../stresstest-aws/README.md)
+ To choose correct Jmeter test profile refer to section _Test profiles_ [here](../stresstest-aws/README.md#test-profiles)
  
  #### To Start Test
 `cd quorum-test/scripts`

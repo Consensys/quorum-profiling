@@ -719,7 +719,7 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
             </elementProp>
             <elementProp name="testTitle" elementType="Argument">
               <stringProp name="Argument.name">testTitle</stringProp>
-              <stringProp name="Argument.value">Quorum test</stringProp>
+              <stringProp name="Argument.value">4node deploy public contract</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
             <elementProp name="eventTags" elementType="Argument">
