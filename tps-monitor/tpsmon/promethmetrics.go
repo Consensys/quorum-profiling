@@ -23,7 +23,7 @@ func NewPrometheusMetricsService(port int) *PrometheusMetricsService {
 			Namespace: "Quorum",
 			Subsystem: "TransactionProcessing",
 			Name:      "TPS",
-			Help:      "Tranasctions processed per second",
+			Help:      "Transactions processed per second",
 		}),
 		blocksGauge: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: "Quorum",

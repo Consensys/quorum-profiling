@@ -6,14 +6,13 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
 )
 
-const blockRequest = "{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBlockByNumber\",\"params\":[\"0x%x\",false],\"id\":2}"
-const blockNumberRequest = "{\"jsonrpc\":\"2.0\",\"method\":\"eth_blockNumber\",\"params\":[],\"id\":1}"
+const blockRequest = `{"jsonrpc":"2.0","method":"eth_getBlockByNumber","params":["0x%x",false],"id":2}`
+const blockNumberRequest = `{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}`
 
 var blockNotFound = fmt.Errorf("block not found")
 
@@ -55,8 +54,7 @@ type GethClient struct {
 }
 
 func NewGethClient(ep string, bdCh chan<- *BlockData, stopc chan struct{}) *GethClient {
-	gc := &GethClient{ep, bdCh, stopc}
-	return gc
+	return &GethClient{ep, bdCh, stopc}
 }
 
 func (g *GethClient) Start() {
@@ -69,13 +67,16 @@ func (g *GethClient) Stop() {
 
 func (g *GethClient) readBlocksFromChain() {
 	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+
 	prevBlkNum, err := g.currentBlockNumber()
 	if err != nil {
 		log.Errorf("reading block number failed %v\n", err)
 		return
-	} else {
-		log.Debugf("prev blockNumber=%d\n", prevBlkNum)
 	}
+
+	log.Debugf("prev blockNumber=%d\n", prevBlkNum)
+
 	totTxns := 0
 	blkCount := 0
 	for {
@@ -86,9 +87,10 @@ func (g *GethClient) readBlocksFromChain() {
 				log.Errorf("reading block number failed %v\n", err)
 				g.bdCh <- nil
 				return
-			} else {
-				log.Debugf("current blockNumber=%d\n", prevBlkNum-1)
 			}
+
+			log.Debugf("current blockNumber=%d\n", prevBlkNum-1)
+
 			for prevBlkNum <= curBlkNum {
 				log.Debugf("reading block %d\n", prevBlkNum)
 				bd, err := g.GetBlock(prevBlkNum)
@@ -115,7 +117,6 @@ func (g *GethClient) readBlocksFromChain() {
 }
 
 func (g *GethClient) currentBlockNumber() (uint64, error) {
-
 	response, err := g.PostRequest(blockNumberRequest)
 	if err != nil {
 		return 0, err
@@ -130,7 +131,7 @@ func (g *GethClient) currentBlockNumber() (uint64, error) {
 
 	log.Debugf("BlockNumberResult:%v\n", bnr)
 
-	blockNumber, err := strconv.ParseUint(strings.Replace(bnr.Result, "0x", "", 1), 16, 64)
+	blockNumber, err := hex2uint64(bnr.Result)
 	if err != nil {
 		log.Errorf("converting hex to int blocknumber failed %v", err)
 		return 0, err
@@ -149,7 +150,6 @@ func (g *GethClient) PostRequest(blockNumberReq string) (*http.Response, error) 
 		err = fmt.Errorf("post request response failed %v\n", response.StatusCode)
 		log.Errorf("err: %v\n", err)
 		return nil, err
-
 	}
 	return response, nil
 }
@@ -160,9 +160,7 @@ func (g *GethClient) GetBlock(bn uint64) (*BlockData, error) {
 		return nil, err
 	}
 	defer response.Body.Close()
-	if err != nil {
-		return nil, err
-	}
+
 	var bdr BlockDataResult
 	if err := json.NewDecoder(response.Body).Decode(&bdr); err != nil {
 		log.Errorf("blockData post request - error reading json %v\n", err)
@@ -173,7 +171,7 @@ func (g *GethClient) GetBlock(bn uint64) (*BlockData, error) {
 }
 
 func (b BlockData) String() string {
-	return fmt.Sprintf("block{ number:%d, txns:%d time:%d, gasLimit:%d, gasUsed:%d}", b.Number, b.TxnCnt, b.Time, b.GasLimit, b.GasUsed)
+	return fmt.Sprintf("block{ number:%d, txns:%d, time:%d, gasLimit:%d, gasUsed:%d}", b.Number, b.TxnCnt, b.Time, b.GasLimit, b.GasUsed)
 }
 
 func blockResult2data(r BlockDataRaw) (*BlockData, error) {
@@ -209,6 +207,6 @@ func blockResult2data(r BlockDataRaw) (*BlockData, error) {
 	return &bd, nil
 }
 
-func hex2uint64(d string) (uint64, error) {
-	return strconv.ParseUint(strings.Replace(d, "0x", "", 1), 16, 64)
+func hex2uint64(hexPrefixedNum string) (uint64, error) {
+	return strconv.ParseUint(hexPrefixedNum, 0, 64)
 }

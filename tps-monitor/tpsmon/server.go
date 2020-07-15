@@ -28,7 +28,6 @@ func NewTPSServer(tm *TPSMonitor, port int) TPSServer {
 	}
 	go s.Start()
 	return s
-
 }
 
 func (s TPSServer) Start() {

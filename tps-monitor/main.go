@@ -3,12 +3,13 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/QuorumEngineering/quorum-test/tps-monitor/tpsmon"
-	log "github.com/sirupsen/logrus"
-	"gopkg.in/urfave/cli.v1"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/QuorumEngineering/quorum-test/tps-monitor/tpsmon"
+	log "github.com/sirupsen/logrus"
+	"gopkg.in/urfave/cli.v1"
 )
 
 var (
@@ -122,7 +123,9 @@ func tps(ctx *cli.Context) error {
 		log.Fatalf("from block is less than to block no")
 	}
 
-	tm := tpsmon.NewTPSMonitor(awsService, promethService, influxdbService, ctx.GlobalString(tpsmon.ConsensusFlag.Name) == "raft", ctx.GlobalString(tpsmon.ReportFileFlag.Name),
+	isRaft := ctx.GlobalString(tpsmon.ConsensusFlag.Name) == "raft"
+
+	tm := tpsmon.NewTPSMonitor(awsService, promethService, influxdbService, isRaft, ctx.GlobalString(tpsmon.ReportFileFlag.Name),
 		fromBlk, toBlk, httpendpoint)
 	startTps(tm)
 	tpsPort := ctx.GlobalInt(tpsmon.TpsPortFlag.Name)
@@ -134,23 +137,27 @@ func tps(ctx *cli.Context) error {
 func startTps(monitor *tpsmon.TPSMonitor) {
 	if monitor.IfBlockRangeGiven() {
 		go monitor.StartTpsForBlockRange()
-	} else {
-		monitor.StartTpsForNewBlocksFromChain()
-		go func() {
-			sigc := make(chan os.Signal, 1)
-			signal.Notify(sigc, syscall.SIGINT, syscall.SIGTERM)
-			defer signal.Stop(sigc)
-			<-sigc
-			log.Error("Got interrupt, shutting down...")
-			go monitor.Stop()
-			for i := 10; i > 0; i-- {
-				<-sigc
-				if i > 1 {
-					log.Warning("Already shutting down, interrupt more to panic.", "times", i-1)
-				}
-			}
-		}()
+		return
 	}
+
+	monitor.StartTpsForNewBlocksFromChain()
+	go func() {
+		sigc := make(chan os.Signal, 1)
+		signal.Notify(sigc, syscall.SIGINT, syscall.SIGTERM)
+		defer signal.Stop(sigc)
+		<-sigc
+		log.Error("Interrupt signal caught, shutting down app")
+
+		go monitor.Stop()
+
+		for i := 5; i > 0; i-- {
+			<-sigc
+			if i > 1 {
+				log.Warning(fmt.Sprintf("Shutdown in progress, interrupt %d more times to force shutdown", i-1))
+			}
+		}
+		panic("Forced shutodwn: maximum interrupts given")
+	}()
 }
 
 func main() {

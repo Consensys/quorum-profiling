@@ -23,8 +23,7 @@ type InfluxdbMetricsService struct {
 }
 
 func NewInfluxdbService(ep string, token string, org string, bucket string, point string, tags string) (*InfluxdbMetricsService, error) {
-	_, err := url.Parse(ep)
-	if err != nil {
+	if _, err := url.Parse(ep); err != nil {
 		return nil, err
 	}
 	tagsMap := stringToTags(tags)
@@ -49,8 +48,7 @@ func (id *InfluxdbMetricsService) PushMetrics(tm time.Time, tps uint64, txns uin
 			"blocks":       float64(blocks),
 		},
 		tm)
-	err := id.writeApi.WritePoint(context.Background(), p)
-	if err != nil {
+	if err := id.writeApi.WritePoint(context.Background(), p); err != nil {
 		log.Errorf("influxdb write failed error: %v", err)
 		id.makeClient()
 		return
