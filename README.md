@@ -23,4 +23,18 @@ The tool can be used for development purpose as well to execute tests on local Q
 
 Refer [running locally](scripts/README.md) for more details on how to use it.
 
+The tool executes the stress test profile selected and then collects the following metrics:
+ * CPU/memory usage metrics of `geth` & `tessera` docker containers from all the nodes in the network (using `telegraf`)
+ * TPS, total transactions count and total block count metrics from first node(`node0`) in the network
+ * `Jmeter` test execution metrics
+ 
+ The above metrics are pushed to `influxdb`. The metrics can be viewed in `grafana` dashboards. Sample dashboards are as shown below:
+  
 
+ ### Sample Quorum Profiling dashboard
+ 
+ ![Quorum Dashboard](images/quorumDashboard.jpeg) 
+ 
+ ### Sample JMeter Dashboard
+  
+ ![Jmeter Dashboard](images/jmeterDashboard.jpeg) 

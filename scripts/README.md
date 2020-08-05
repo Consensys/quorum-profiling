@@ -15,15 +15,9 @@
  
  This brings up `influxdb`, `grafana`, `telegraf`, Jmeter test` and `tps-monitor` containers. 
  
- ###Grafana dashboard 
+ ### Grafana dashboard 
   It can be accessed at `http://localhost:3000/login`. Enter `admin/admin` as user id and password to access the predefined dashboards `Quorum Profiling Dashboard` & `Quorum Profiling Jmeter Dashboard`. Sample dashboard are shown below.
  
- #### Sample Quorum Profiling dashboard
- ![Quorum Dashboard](../stresstest-aws/quorumDashboard.jpeg) 
-    
- #### Sample JMeter Dashboard
- ![Jmeter Dashboard](../stresstest-aws/jmeterDashboard.jpeg) 
-  
  ### Influxdb 
   It can be access at `http://localhost:8086/`. The database name is `telegraf` and user/password is `telegraf/test123`
  

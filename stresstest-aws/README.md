@@ -9,23 +9,9 @@
  
  Further, CPU/memory usage of first node (`node0`) and TPS metrics are pushed to AWS metrics. These metrics can be viewed under AWS `cloudwatch > custom namespaces` with namespace `<network_name>-<pulbicIp Of node0>`. The metrics names are self-explanatory.
  
- Once the stress test profile is executed, the tool collects the following metrics:
- * CPU/memory usage metrics of `geth` & `tessera` docker containers from all the nodes in the network (using `telegraf`)
- * TPS, total transactions count and total block count metrics from first node(`node0`) in the network
- * `Jmeter` test execution metrics
- 
- The above metrics are pushed to `influxdb`. The metrics can be viewed in `grafana` dashboards.
-  
  ## Grafana dashboard 
  The dashboard can be accessed at `http://<testNode url>:3000/login`. Enter `admin/admin`  as user id and password to access the predefined dashboards `Quorum Profiling Dashboard` & `Quorum Profiling Jmeter Dashboard`. The sample dashboards are as shown below:
- ### Sample Quorum Profiling dashboard
- 
- ![Quorum Dashboard](quorumDashboard.jpeg) 
- 
- ### Sample JMeter Dashboard
-  
- ![Jmeter Dashboard](jmeterDashboard.jpeg) 
- 
+
  ## Influxdb 
  It can be access at `http://<testnode url>:8086/`. The database name is  `telegraf` and user/password is `telegraf/test123`.
 
