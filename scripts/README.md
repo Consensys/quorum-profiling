@@ -20,7 +20,7 @@
  
  #### Sample Quorum Profiling dashboard
  ![Quorum Dashboard](../stresstest-aws/quorumDashboard.jpeg) 
-  
+    
  #### Sample JMeter Dashboard
  ![Jmeter Dashboard](../stresstest-aws/jmeterDashboard.jpeg) 
   
