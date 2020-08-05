@@ -111,24 +111,19 @@ Logs of `geth`,`tessera`, `jmeter` and `tpsmonitor` processes can be viewed unde
   | BlockCount   | total block count |
 
 
-## TPS Data/Chart
+## TPS Data
 You can download TPS data(in .csv format) from http endpoint `http://<test node>:7575/tpsdata`
 . Sample data shown below:
 ```
 localTime,refTime,TPS,TxnCount,BlockCount
-06 May 2020 10:51,00:00:01,722,43371,242
-06 May 2020 10:52,00:00:02,724,86950,482
-06 May 2020 10:53,00:00:03,724,130466,722
-06 May 2020 10:54,00:00:04,724,173809,962
-06 May 2020 10:55,00:00:05,723,217077,1202
-06 May 2020 10:56,00:00:06,723,260370,1442
+06 May 2020 10:51:01,00:00:01,722,43371,242
+06 May 2020 10:51:02,00:00:02,724,86950,482
+06 May 2020 10:51:03,00:00:03,724,130466,722
+06 May 2020 10:51:04,00:00:04,724,173809,962
+06 May 2020 10:51:05,00:00:05,723,217077,1202
+06 May 2020 10:51:06,00:00:06,723,260370,1442
 ```
-You can also view TPS graph from http endpoint `http://<test-node>:7575/tpschart?iw=15&ih=5`. 
-- `iw` - width of image
-- `ih` - height of image
 
- ![Sample TPSChart](TPSChart.jpeg)  
- 
   
 
      

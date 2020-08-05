@@ -85,7 +85,7 @@ Displays TPS calculated in the console for given range of historical blocks as t
 
 Example: `tpsmonitor --httpendpoint http://52.77.226.85:23000/ --consensus raft --from 1 --to 10000 --report tps-m.csv --port 8888`
 
-#### HTTP endpoint for TPS data/chart
+#### HTTP endpoint for TPS data
 TPS data (in CSV format) can be downloaded from the http endpoint.
 `http://<host>:<port>/tpsdata`
 
@@ -103,6 +103,3 @@ localTime,refTime,TPS,TxnCount,BlockCount
 06 May 2020 06:03:05,00:00:00:05,1880,564064,1163
 ````
 
-You can view TPS graph from http endpoint `http://<test-node>:7575/tpschart?iw=15&ih=5`. 
-- `iw` - width of image
-- `ih` - height of image
