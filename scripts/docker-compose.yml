@@ -1,0 +1,61 @@
+version: "2"
+services:
+  telegraf:
+    image: telegraf
+    container_name: telegraf
+    restart: always
+    environment:
+      HOST_PROC: /rootfs/proc
+      HOST_SYS: /rootfs/sys
+      HOST_ETC: /rootfs/etc
+    ports:
+      - 9126:9126
+    volumes:
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/rootfs/sys:ro
+      - /proc:/rootfs/proc:ro
+      - /etc:/rootfs/etc:ro
+    depends_on:
+      - influxdb
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    networks:
+      - monitoring
+    volumes:
+      - grafana-volume:/var/lib/grafana
+      - ./grafana/graf-datasource.yaml:/etc/grafana/provisioning/datasources/qrm-datasource.yaml
+      - ./grafana/graf-dashboard.yaml:/etc/grafana/provisioning/dashboards/qrm-dashboard.yaml
+      - ./grafana/quorum-test-dashboard.json:/etc/grafana/provisioning/dashboards/quorum-tps-dashboard.json
+      - ./grafana/quorum-jmeter-dashboard.json:/etc/grafana/provisioning/dashboards/quorum-jmeter-dashboard.json
+    depends_on:
+      - influxdb
+
+  influxdb:
+    image: influxdb
+    container_name: influxdb
+    restart: unless-stopped
+    ports:
+      - 8086:8086
+    networks:
+      - monitoring
+    volumes:
+      - influxdb-volume:/var/lib/influxdb
+    environment:
+      - INFLUXDB_DB=telegraf
+      - INFLUXDB_USER=telegraf
+      - INFLUXDB_USER_PASSWORD=test123
+      - INFLUXDB_ADMIN_ENABLED=true
+      - INFLUXDB_ADMIN_USER=admin
+      - INFLUXDB_ADMIN_PASSWORD=admin
+
+networks:
+  monitoring:
+volumes:
+  grafana-volume:
+  influxdb-volume:
