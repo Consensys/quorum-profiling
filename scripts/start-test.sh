@@ -57,10 +57,15 @@ echo "consensus=$consensus"
 echo "endpoint=$quorumEndpoint"
 echo "testProfile=$jmeter_test_profile"
 
+if [ ! -d "${homeDir}/scripts" ]; then
+    echo "error: ${homeDir}/scripts does not exist"
+    exit
+fi
+
 cd ${homeDir}/scripts
 
 # copy jmeter test profiles to jmeter for docker volume mapping
-cp -pR ${homeDir}/stresstest-aws/jmeter-test/* ${homeDir}/scripts/jmeter
+cp -pR ${homeDir}/jmeter-test/* ${homeDir}/scripts/jmeter
 
 echo "starting grafana, influxdb, prometheus.."
 docker-compose up -d

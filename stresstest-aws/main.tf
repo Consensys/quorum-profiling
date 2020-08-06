@@ -126,7 +126,7 @@ locals {
   tm_dir_vm_path            = "/data/tm"
   wrk_stresstest_home_path  = "~/stresstest"
   node_monitor_home_path    = "~/monitor"
-  stresstest_src_path       = "jmeter-test"
+  stresstest_src_path       = "../jmeter-test"
   wrk_stresstest_gen_dir    = "${local.generated_dir}/${local.network_name}/stresstest"
   wrk_scripts_src_dir       = "scripts/test"
   node_dir_prefix           = "node-"
