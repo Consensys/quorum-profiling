@@ -1,6 +1,6 @@
 
  # Test Quorum in AWS
- This tool spins up a quorum network based on the inputs given in `setting.tfvars` using `terraform` in AWS and automatically executes the `Jmeter` stress test profile as specified in the config. 
+ This tool spins up a Quorum network based on the inputs given in `setting.tfvars` using `terraform` in AWS and automatically executes the `Jmeter` stress test profile as specified in the config. 
  
  The below diagram explains the overall architecture of the stress test environment that the tool will bring up:
  ![architecture](StressTestArch.jpg) 
@@ -36,8 +36,8 @@
  - `gasLimit` = gasLimit of genesis block and max/min gas limit passed in geth commandline for each node
  - `blockPeriod` = block period of the consensus. units: for raft treated as milliseconds and for ibft treated as seconds
  - `txpoolSize` = initialise `geth`'s `txpool.accountqueue`,`txpool.globalslots` and `txpool.globalqueue` arguments with this txpool size for each node
- -  `geth19` = specifies if quorum is based on geth1.9.x version. This is used to specify `geth`'s commandline arguments like `--allow-insecure-unlock` that is specific to `geth1.9.x`
- - `quorum_docker_image` = quorum docker image
+ -  `geth19` = specifies if Quorum is based on geth1.9.x version. This is used to specify `geth`'s commandline arguments like `--allow-insecure-unlock` that is specific to `geth1.9.x`
+ - `quorum_docker_image` = Quorum docker image
  - `tessera_docker_image` = tessera docker image
  - `tps_docker_image` = tpsmonitor docker image
  - `jmeter_docker_image` = jmeter docker image
@@ -45,9 +45,9 @@
  - `jmeter_test_profile` = name of the test profile to be executed. Refer [Jmeter test profiles](jmeter-test/README.md) for details on various test profiles supported in the tool.
  - `jmeter_no_of_threads` = number of threads per node to be created by jmeter for the specified test profile
  - `jmeter_duration_of_run` = duration of run for the specified test profile
- - `jmeter_throughput` = specifies the number of transactions to be sent to quorum per minute by jmeter. This is used to throttle the input. It is used by `1node` and `4node` test profiles.
- - `jmeter_private_throughput` = specifies the number of private transactions to be sent to quorum per minute by jmeter. This is used to throttle the input. It is used by `custom/mixed` test profile described below.
- - `jmeter_public_throughput` = specifies the number of public transactions to be sent to quorum per minute by jmeter. This is used to throttle the input. It is used by `custom/mixed` test profile described below.
+ - `jmeter_throughput` = specifies the number of transactions to be sent to Quorum per minute by jmeter. This is used to throttle the input. It is used by `1node` and `4node` test profiles.
+ - `jmeter_private_throughput` = specifies the number of private transactions to be sent to Quorum per minute by jmeter. This is used to throttle the input. It is used by `custom/mixed` test profile described below.
+ - `jmeter_public_throughput` = specifies the number of public transactions to be sent to Quorum per minute by jmeter. This is used to throttle the input. It is used by `custom/mixed` test profile described below.
  ### Sample config:
  ```
 aws_profile = "default"

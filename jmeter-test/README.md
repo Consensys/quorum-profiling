@@ -31,3 +31,9 @@ Private transactions have only one participants in `privateFor` by default.
  * profiles for executing the stress test from single node, refer [here](1node/)
  * profiles for executing the stress test from four nodes in the network, refer [here](4node/)
  * If you want to customize and execute the stress test from any number of nodes in the network, refer [here](custom/)
+ 
+ **Note!!!** When executing `Jmeter` tests, the `Jmeter` test executiuon summary can be stored in an `influxdb`. This can be achieved by setting up the `influxdburl` in the properties file as shown below.
+ ```
+#to write jmeter test summary to influxdb
+influxdburl=http://host.docker.internal:8086/write?db=telegraf
+```

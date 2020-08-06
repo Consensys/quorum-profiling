@@ -4,7 +4,7 @@ aws_user = "<aws-user-name>"
 aws_network_name = "<aws-network-name>"
 // aws instance type, example: t3a.2xlarge
 aws_instance_type = "<aws-instance-type>"
-// no of nodes in quorum network
+// no of nodes in Quorum network
 aws_num_of_nodes_in_network = 4
 // disk storage size for each node in GB
 aws_volume_size = 100
@@ -19,7 +19,7 @@ consensus = "raft"
 txpoolSize = 50000
 // geth 197 flag for specifying geth197 specific command line args
 geth19 = true
-// docker image of quorum
+// docker image of Quorum
 quorum_docker_image = "quorumengineering/quorum:latest"
 // docker image of tessera
 tessera_docker_image = "quorumengineering/tessera:0.11"
