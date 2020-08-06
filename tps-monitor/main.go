@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/QuorumEngineering/quorum-test/tps-monitor/tpsmon"
+	"github.com/QuorumEngineering/quorum-profiling/tps-monitor/tpsmon"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/urfave/cli.v1"
 )

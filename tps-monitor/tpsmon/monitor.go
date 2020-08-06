@@ -7,7 +7,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/QuorumEngineering/quorum-test/tps-monitor/reader"
+	"github.com/QuorumEngineering/quorum-profiling/tps-monitor/reader"
 )
 
 // TPSRecord represents a data point of TPS at a specific time

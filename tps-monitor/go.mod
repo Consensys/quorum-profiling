@@ -1,4 +1,4 @@
-module github.com/QuorumEngineering/quorum-test/tps-monitor
+module github.com/QuorumEngineering/quorum-profiling/tps-monitor
 
 go 1.13
 
