@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/QuorumEngineering/quorum-profiling/tps-monitor/reader"
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
+	"github.com/jpmorganchase/quorum-profiling/tps-monitor/reader"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/aws/aws-sdk-go/aws"
