@@ -21,7 +21,7 @@ The tool executes the stress test profile selected and then collects the followi
  * TPS, total transactions count and total block count metrics from all nodes in the network
  * `Jmeter` test execution metrics
  
- The above metrics are pushed to `influxdb`. The tool also has the ability to pull the metrics data from a `prometheus` end point. The metrics can be viewed in `grafana` dashboards. Sample dashboards are as shown below:
+ The above metrics are pushed to `influxdb`. The tool also supports pull of the metrics data from a `prometheus` end point. The metrics can be viewed in `grafana` dashboards. Sample dashboards are as shown below:
   
 
  ### Sample Quorum Profiling dashboard

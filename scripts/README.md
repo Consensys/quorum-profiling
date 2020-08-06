@@ -22,10 +22,12 @@
  
  ### Influxdb 
   It can be access at `http://localhost:8086/`. The database name is `telegraf` and user/password is `telegraf/test123`
+  > if you wish to change the port, default user id/password, please edit the [telegraf.conf](telegraf/telegraf.conf) file
  
  ### Prometheus metrics  
   * Quorum node cpu/memory usage metrics can be accessed at `http://localhost:9126/metrics`.
   * TPS metrics can be accessed at `http://localhost:2112/metrics`.
+  > if you wish to change the port for `prometheus`, please edit the [telegraf.conf](telegraf/telegraf.conf) file
  
  ### To Stop Test
  
