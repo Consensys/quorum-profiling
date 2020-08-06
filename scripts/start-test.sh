@@ -13,7 +13,7 @@ function usage() {
   echo "    testProfile - name of jmeter test profile. eg: 4node/deploy-contract-public)"
   echo "    consensus - name of consensus - raft or ibft. eg: raft)"
   echo "    endpoint - quorum rpc endpoint. eg: http://localhost:22000)"
-  echo "    basedir - base dir of repo. eg: /home/bob/quorum-test)"
+  echo "    basedir - base dir of repo. eg: /home/bob/quorum-profiling)"
   echo ""
   exit -1
 }

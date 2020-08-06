@@ -12,7 +12,7 @@ This is a tool to monitor transactions per second, total transactions and total 
 
 Building tpsmonitor requires Go (version 1.13 or later). You can install it using your favourite package manager. Once the dependencies are installed, run
 
->`make` from dir `quorum-test/tps-monitor`
+>`make` from dir `quorum-profiling/tps-monitor`
 
 ## Running `tpsmonitor`
 

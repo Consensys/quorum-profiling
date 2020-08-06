@@ -4,16 +4,16 @@
  To choose correct Jmeter test profile refer to section _Test profiles_ [here](../stresstest-aws/jmeter-test/README.md)
  
  ### Prerequisites to run the test
- For running the tests the tool expects `host_acct.csv` and `network.properties` files to be present in `quorum-test/scripts` directory. Sample `host_acct.csv` can be found [here](../jmeter-test/host_acct.sample.csv). Sample `network.properties` can be found [here](../jmeter-test/sample-network.properties)
+ For running the tests the tool expects `host_acct.csv` and `network.properties` files to be present in `quorum-profiling/scripts` directory. Sample `host_acct.csv` can be found [here](../jmeter-test/host_acct.sample.csv). Sample `network.properties` can be found [here](../jmeter-test/sample-network.properties)
  
- Modify the sample files as necessary and copy these files to `quorum-test/scripts` before starting the test.
+ Modify the sample files as necessary and copy these files to `quorum-profiling/scripts` before starting the test.
  
  ### To start test
-`cd quorum-test/scripts`
+`cd quorum-profiling/scripts`
 
  `./start-test.sh --testProfile <jmeter-test-profile> --consensus <ibft|raft> --endpoint <quorum-rpc-endpoint> --basedir <repo base dir>`
  
- example: `./start-test.sh --testProfile "4node/deploy-contract-public" --consensus "ibft" --endpoint "http://host.docker.internal:22000" --basedir ~/go/src/github.com/QuorumEngineering/quorum-test`
+ example: `./start-test.sh --testProfile "4node/deploy-contract-public" --consensus "ibft" --endpoint "http://host.docker.internal:22000" --basedir ~/go/src/github.com/QuorumEngineering/quorum-profiling`
  
  This brings up `influxdb`, `grafana`, `telegraf`, Jmeter test` and `tps-monitor` containers. 
  
@@ -29,7 +29,7 @@
  
  ### To Stop Test
  
- `cd quorum-test/scripts`
+ `cd quorum-profiling/scripts`
  
  grep for `jmeter` docker container and stop it.
  

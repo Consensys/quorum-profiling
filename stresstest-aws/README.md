@@ -78,8 +78,8 @@ jmeter_private_throughput = 2400
 ```
 
 ## Usage
- - `git clone https://github.com/QuorumEngineering/quorum-test.git`
- - `cd quorum-test/stresstest-aws`
+ - `git clone https://github.com/QuorumEngineering/quorum-profiling.git`
+ - `cd quorum-profiling/stresstest-aws`
  - edit `settings.tfvars` and configure parameters for stress test
  - Run `terraform init` to initialize
  - To start the stress test, update `setting.tfvars` with preferred config.
