@@ -64,8 +64,37 @@ fi
 
 cd ${homeDir}/scripts
 
+# create the tpsmon directory to store the test results
+mkdir -p tpsmon jmeter
+
+# check that properties file are there in the local directory
+HOSTFILE="${homeDir}/scripts/host_acct.csv"
+PROPERTIES="${homeDir}/scripts/network.properties"
+
+if [ ! -f "${HOSTFILE}" ]; then
+    echo "error: configuration file ${HOSTFILE} not found"
+    exit
+fi
+
+if [ ! -f "${PROPERTIES}" ]; then
+    echo "error: configuration file ${PROPERTIES} not found"
+    exit
+fi
+
 # copy jmeter test profiles to jmeter for docker volume mapping
-cp -pR ${homeDir}/jmeter-test/* ${homeDir}/scripts/jmeter
+JMXFILE=${homeDir}/jmeter-test/${JMXDIR}/${jmeter_test_profile}.jmx
+
+if [ ! -f "${JMXFILE}" ]; then
+    echo "error: jmeter test script ${JMXFILE} not found"
+    exit
+fi
+
+JMXDIR=`echo ${jmeter_test_profile} | cut -f1 -d "/"`
+mkdir -p ${homeDir}/scripts/jmeter/${JMXDIR}
+
+cp ${homeDir}/jmeter-test/${jmeter_test_profile}.jmx ${homeDir}/scripts/jmeter/${JMXDIR}
+cp $HOSTFILE ${homeDir}/scripts/jmeter
+cp $PROPERTIES ${homeDir}/scripts/jmeter
 
 echo "starting grafana, influxdb, prometheus.."
 docker-compose up -d
@@ -76,8 +105,8 @@ tpsDockerImg="amalrajmani/tpsmonitor:v1"
 jmeterDockerImg="amalrajmani/jmeter:5.2.1"
 
 echo "start jmeter profile ${jmeter_test_profile}.."
-docker run -d -v ${homeDir}/scripts/jmeter:/stresstest -v ${homeDir}/scripts/jmeter/network.properties:/stresstest/network.properties \
--v ${homeDir}/scripts/jmeter/host_acct.csv:/stresstest/host_acct.csv --name jmeter  ${jmeterDockerImg} -n -t /stresstest/${jmeter_test_profile}.jmx -q /stresstest/network.properties -j /stresstest/jmeter.log
+docker run -d -v ${homeDir}/scripts/jmeter:/stresstest \
+ --name jmeter  ${jmeterDockerImg} -n -t /stresstest/${jmeter_test_profile}.jmx -q /stresstest/network.properties -j /stresstest/jmeter.log
 echo "jmeter test profile ${jmeter_test_profile} started"
 
 
