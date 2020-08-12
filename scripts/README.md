@@ -1,7 +1,7 @@
 # Test Quorum locally
  In this scenario it is assumed that there is a running Quorum network and the goal is to run Jmeter stress test on it.
  
- To choose correct Jmeter test profile refer to section _Test profiles_ [here](../stresstest-aws/jmeter-test/README.md)
+ To choose correct Jmeter test profile refer to section _Test profiles_ [here](../jmeter-test)
  
  ### Prerequisites to run the test
  For running the tests the tool expects `host_acct.csv` and `network.properties` files to be present in `quorum-profiling/scripts` directory. Sample `host_acct.csv` can be found [here](../jmeter-test/host_acct.sample.csv). Sample `network.properties` can be found [here](../jmeter-test/sample-network.properties)
