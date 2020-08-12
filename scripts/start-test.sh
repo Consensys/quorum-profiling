@@ -100,9 +100,8 @@ echo "starting grafana, influxdb, prometheus.."
 docker-compose up -d
 echo "started grafana, influxdb and prometheus"
 
-# TODO - change this to quorumengineering namespace once open source is completed and docker image pushed to quorumengineering
-tpsDockerImg="amalrajmani/tpsmonitor:v1"
-jmeterDockerImg="amalrajmani/jmeter:5.2.1"
+tpsDockerImg="quorumengineering/tpsmonitor:v1"
+jmeterDockerImg="quorumengineering/jmeter:5.2.1"
 
 echo "start jmeter profile ${jmeter_test_profile}.."
 docker run -d -v ${homeDir}/scripts/jmeter:/stresstest \

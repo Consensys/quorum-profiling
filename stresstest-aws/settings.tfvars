@@ -24,9 +24,8 @@ quorum_docker_image = "quorumengineering/quorum:latest"
 // docker image of tessera
 tessera_docker_image = "quorumengineering/tessera:0.11"
 
-// TODO - change this to quorumengineering namespace once open source is completed and docker image pushed to quorumengineering
-tps_docker_image = "amalrajmani/tpsmonitor:v1"
-jmeter_docker_image = "amalrajmani/jmeter:5.2.1"
+tps_docker_image = "quorumengineering/tpsmonitor:v1"
+jmeter_docker_image = "quorumengineering/jmeter:5.2.1"
 
 // jmeter test profile type you want to run
 jmeter_test_profile = "4node/deploy-contract-public"
