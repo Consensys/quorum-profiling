@@ -12,8 +12,12 @@ aws_vpc_id = "<aws-vpc-id>"
 
 // consensus and block period
 blockPeriod = 250
-// consensus - raft or ibft
+// consensus - raft or ibft or clique
 consensus = "raft"
+// flag to enable/disable tessera
+enable_tessera = true
+// flag that indicates native geth or quorum
+native_geth = false
 
 // txpool.accountslots/gloablslots/globalqueue size at geth commandline for all nodes
 txpoolSize = 50000
