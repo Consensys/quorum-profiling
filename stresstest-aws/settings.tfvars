@@ -30,6 +30,8 @@ jmeter_docker_image = "quorumengineering/jmeter:5.2.1"
 // jmeter test profile type you want to run
 jmeter_test_profile = "4node/deploy-contract-public"
 
+enable_tessera = false
+
 // gas limit of the block and min/max at geth commandline for all nodes
 gasLimit = 37500000
 

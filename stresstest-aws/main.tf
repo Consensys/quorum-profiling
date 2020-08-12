@@ -30,8 +30,21 @@ variable "aws_user" {
   default = ""
 }
 variable "consensus" {
-  description = "name of consensus supported by quorum. should be raft or ibft"
+  description = "name of consensus supported by quorum. should be raft or ibft or clique"
   default = "raft"
+}
+
+variable "enable_tessera" {
+  type = bool
+  description = "specify if tessera should be enabled or not"
+  default = true
+}
+
+
+variable "native_geth" {
+  type = bool
+  description = "specify if native geth is used or not"
+  default = false
 }
 
 variable "jmeter_test_profile" {
@@ -247,3 +260,5 @@ output "private_throughput" {
 output "num_of_threads" {
   value = var.jmeter_no_of_threads
 }
+
+

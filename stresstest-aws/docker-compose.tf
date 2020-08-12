@@ -22,6 +22,7 @@ x-quorum-def:
     - /bin/sh
     - -c
     - |
+%{if var.enable_tessera == true~}
       UDS_WAIT=10
       for i in $$(seq 1 100)
       do
@@ -34,6 +35,7 @@ x-quorum-def:
           sleep $$UDS_WAIT
         fi
       done
+%{endif~}
       geth $$ADDITIONAL_GETH_ARGS \
         --identity Node$$NODE_ID \
         --datadir $$DDIR \
@@ -61,6 +63,11 @@ x-quorum-def:
         --minerthreads 1 \
         --syncmode full \
 %{endif~}
+%{if var.consensus == "clique"~}
+        --mine \
+        --minerthreads 1 \
+        --syncmode full \
+%{endif~}
 %{if var.consensus == "raft"~}
         --raft \
         --raftport ${local.container_raft_port} \
@@ -71,6 +78,7 @@ x-quorum-def:
         --txpool.accountqueue ${var.txpoolSize} \
         --txpool.globalslots ${var.txpoolSize} \
         --txpool.globalqueue ${var.txpoolSize}
+%{if var.enable_tessera == true~}
 x-tx-manager-def:
   &tx-manager-def
   image: "${local.tessera_docker_image}"
@@ -93,6 +101,7 @@ x-tx-manager-def:
     - |
       rm -f ${local.tm_dir_container_path}/tm.ipc
       java -Xms1024M -Xmx2048M -jar /tessera/tessera-app.jar -configfile ${local.tm_dir_container_path}/config.json
+%{endif~}
 services:
   node:
     << : *quorum-def
@@ -108,18 +117,25 @@ services:
       - vol:/data
       - ${local.qdata_dir_vm_path}:${local.qdata_dir_container_path}
       - ${local.tm_dir_vm_path}:${local.tm_dir_container_path}
+%{if var.enable_tessera == true~}
     depends_on:
       - txmanager
+%{endif~}
     networks:
       ${local.network_name}-net:
         ipv4_address: ${element(data.null_data_source.meta[*].inputs.nodeContainerIP, count.index)}
     environment:
       - ADDITIONAL_GETH_ARGS=${local.geth_addt_args}
+%{if var.enable_tessera == true~}
       - PRIVATE_CONFIG=${local.tm_dir_container_path}/tm.ipc
+%{else~}
+      - PRIVATE_CONFIG=ignore
+%{endif~}
       - TXMANAGER_IP=${element(data.null_data_source.meta[*].inputs.txManagerContainerIP, count.index)}
       - NODE_ID=${format("%d", count.index + 1)}
       - DDIR=${local.qdata_dir_container_path}
       - NODEKEY_HEX=${element(quorum_bootstrap_node_key.nodekeys-generator[*].node_key_hex, count.index)}
+%{if var.enable_tessera == true~}
   txmanager:
     << : *tx-manager-def
     container_name: ${local.network_name}-tm
@@ -133,6 +149,7 @@ services:
     networks:
       ${local.network_name}-net:
         ipv4_address: ${element(data.null_data_source.meta[*].inputs.txManagerContainerIP, count.index)}
+%{endif~}
 networks:
   ${local.network_name}-net:
     name: ${local.network_name}-net
