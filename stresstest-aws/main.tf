@@ -41,7 +41,7 @@ variable "enable_tessera" {
 }
 
 
-variable "native_geth" {
+variable "is_quorum" {
   type = bool
   description = "specify if native geth is used or not"
   default = false

@@ -16,8 +16,8 @@ blockPeriod = 250
 consensus = "raft"
 // flag to enable/disable tessera
 enable_tessera = true
-// flag that indicates native geth or quorum
-native_geth = false
+// flag that indicates upstream geth or quorum geth
+is_quorum = false
 
 // txpool.accountslots/gloablslots/globalqueue size at geth commandline for all nodes
 txpoolSize = 50000
