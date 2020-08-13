@@ -43,7 +43,7 @@
  - `jmeter_docker_image` = jmeter docker image
  - `consensus` = consensus to be used. It should be raft or ibft or clique
  - `enable_tessera` = bool flag to enable or disable tessera
- - `is_quorum` = bool flag to indicate native geth or quorum
+ - `is_quorum` = bool flag to indicate Quorum geth or native geth
  - `jmeter_test_profile` = name of the test profile to be executed. Refer [Jmeter test profiles](jmeter-test/README.md) for details on various test profiles supported in the tool.
  - `jmeter_no_of_threads` = number of threads per node to be created by jmeter for the specified test profile
  - `jmeter_duration_of_run` = duration of run for the specified test profile
@@ -69,7 +69,7 @@ aws_region = "ap-southeast-1"
  jmeter_docker_image = " quorumengineering/jmeter:5.2.1"
  consensus = "raft"
  enable_tessera = true
- is_quorum = false
+ is_quorum = true
 jmeter_test_profile = "4node/deploy-contract-public"
 jmeter_no_of_threads = 1
 jmeter_duration_of_run = 1200
@@ -81,13 +81,12 @@ jmeter_public_throughput = 12000
 jmeter_private_throughput = 2400
 ```
 
-## To Create an Ethereum private network
-Use the following config to create an Ethereum private network.
+**NOTE!!** To bring up a network with native geth, configure the below parameters. This will bring up a network running with `clique` consensus
 ```
 consensus = "clique"
 enable_tessera = false
-is_quorum = true
-quorum_docker_image = "ethereum/client-go:alltools-v1.9.19"
+is_quorum = false
+quorum_docker_image = "<<native geth docker image>>"
 ```
 
 ## Usage

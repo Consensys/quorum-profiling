@@ -78,7 +78,7 @@ resource "local_file" "genesis-file" {
       "eip155Block": 0,
       "eip150Hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
       "eip158Block": 0,
-%{if var.is_quorum == false~}
+%{if var.is_quorum == true~}
       "isQuorum": true,
 %{endif~}
 %{if var.consensus == "ibft"~}
