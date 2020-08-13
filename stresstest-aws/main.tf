@@ -124,6 +124,11 @@ variable "aws_num_of_nodes_in_network" {
   description = "number of nodes in the network"
 }
 
+// hack to validate upstream geth usage
+resource "null_resource" "upstream_geth_validation" {
+  triggers = var.is_quorum == false && (var.consensus != "clique" || var.enable_tessera == true)  ? file("ERROR: to use upstream geth - set consensus to clique and disable tessera") : {}
+}
+
 
 
 locals {
