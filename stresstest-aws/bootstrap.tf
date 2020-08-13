@@ -51,7 +51,7 @@ resource "local_file" "tm" {
 
 
 locals {
-  clique_extra_data = join("", [ for a in flatten(quorum_bootstrap_keystore.accountkeys-generator.*.account) : replace(a.address,"0x","") ])
+  clique_extra_data = format("0x0000000000000000000000000000000000000000000000000000000000000000%s0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", join("", [ for a in flatten(quorum_bootstrap_keystore.accountkeys-generator.*.account) : replace(a.address,"0x","") ]))
   accounts_alloc  = <<-EOT
   %{for a in flatten(quorum_bootstrap_keystore.accountkeys-generator.*.account)~}
     "${a.address}" : {
@@ -59,6 +59,30 @@ locals {
     },
   %{endfor~}
   EOT
+
+  consensus_extra_data = {
+    "ibft" = "${quorum_bootstrap_istanbul_extradata.this.extradata}"
+    "clique" = "${local.clique_extra_data}"
+    "raft"   = "0x0000000000000000000000000000000000000000000000000000000000000000"
+  }
+
+  consensus_genesis_config = {
+    "ibft" = <<-EOT
+     "istanbul": {
+        "epoch": 30000,
+        "policy": 0,
+        "ceil2Nby3Block": 0
+      },
+    EOT
+    "clique" = <<-EOT
+     "clique": {
+        "epoch": 30000,
+        "period": ${var.blockPeriod}
+      },
+    EOT
+    "raft"   = ""
+  }
+
 }
 
 resource "local_file" "genesis-file" {
@@ -81,34 +105,12 @@ resource "local_file" "genesis-file" {
 %{if var.is_quorum == true~}
       "isQuorum": true,
 %{endif~}
-%{if var.consensus == "ibft"~}
-      "istanbul": {
-        "epoch": 30000,
-        "policy": 0,
-        "ceil2Nby3Block": 0
-      },
-%{endif~}
-%{if var.consensus == "clique"~}
-      "clique": {
-        "epoch": 30000,
-        "period": ${var.blockPeriod}
-      },
-%{endif~}
+      ${lookup(local.consensus_genesis_config, var.consensus, "" )}
       "maxCodeSize": 50
     },
     "difficulty": "${var.consensus == "ibft" ? "0x1" : "0x0"}",
-%{if var.consensus == "ibft"~}
-    "extraData": "${quorum_bootstrap_istanbul_extradata.this.extradata}",
-%{endif~}
+    "extraData": "${lookup(local.consensus_extra_data, var.consensus, "0x0000000000000000000000000000000000000000000000000000000000000000")}",
 
-%{if var.consensus == "clique"~}
-    "extraData": "0x0000000000000000000000000000000000000000000000000000000000000000${local.clique_extra_data}0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-%{endif~}
-
-
-%{if var.consensus == "raft"~}
-    "extraData": "0x0000000000000000000000000000000000000000000000000000000000000000",
-%{endif~}
     "gasLimit": "${var.gasLimit}",
     "mixhash": "${var.consensus == "ibft" ? data.quorum_bootstrap_genesis_mixhash.this.istanbul : "0x00000000000000000000000000000000000000647572616c65787365646c6578"}",
     "nonce": "0x0",

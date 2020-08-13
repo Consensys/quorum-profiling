@@ -126,11 +126,7 @@ services:
         ipv4_address: ${element(data.null_data_source.meta[*].inputs.nodeContainerIP, count.index)}
     environment:
       - ADDITIONAL_GETH_ARGS=${local.geth_addt_args}
-%{if var.enable_tessera == true~}
-      - PRIVATE_CONFIG=${local.tm_dir_container_path}/tm.ipc
-%{else~}
-      - PRIVATE_CONFIG=ignore
-%{endif~}
+      - PRIVATE_CONFIG=${var.enable_tessera == true ? format("%s/tm.ipc", local.tm_dir_container_path) : "ignore"}
       - TXMANAGER_IP=${element(data.null_data_source.meta[*].inputs.txManagerContainerIP, count.index)}
       - NODE_ID=${format("%d", count.index + 1)}
       - DDIR=${local.qdata_dir_container_path}
