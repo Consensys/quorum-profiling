@@ -81,11 +81,13 @@ jmeter_public_throughput = 12000
 jmeter_private_throughput = 2400
 ```
 
-**NOTE!!** To bring up a network with native geth, configure the below parameters. This will bring up a network running with `clique` consensus
+**NOTE!!** To bring up a network with native geth, configure the below parameters. This will bring up a network running with `clique` consensus.
+Docker image should have both `geth` and `bootnode`.
 ```
 consensus = "clique"
 enable_tessera = false
 is_quorum = false
+// native geth docker image, eg: ethereum/client-go:alltools-v1.9.19
 quorum_docker_image = "<<native geth docker image>>"
 ```
 
