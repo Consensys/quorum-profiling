@@ -24,7 +24,7 @@ resource "quorum_bootstrap_network" "this" {
 
 resource "quorum_bootstrap_keystore" "accountkeys-generator" {
   count        = local.number_of_nodes
-  keystore_dir = format("%s/keystore", quorum_bootstrap_data_dir.datadirs-generator[count.index].data_dir_abs)
+ keystore_dir = format("%s/%s%s/keystore", quorum_bootstrap_network.this.network_dir_abs, local.node_dir_prefix, count.index)
 
   dynamic "account" {
     for_each = list("") // 1 account with empty passphrase
@@ -49,11 +49,49 @@ resource "local_file" "tm" {
   content  = quorum_transaction_manager_keypair.tm[count.index].key_data
 }
 
+
+locals {
+  clique_extra_data = format("0x0000000000000000000000000000000000000000000000000000000000000000%s0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", join("", [ for a in flatten(quorum_bootstrap_keystore.accountkeys-generator.*.account) : replace(a.address,"0x","") ]))
+  accounts_alloc  = <<-EOT
+  %{for a in flatten(quorum_bootstrap_keystore.accountkeys-generator.*.account)~}
+    "${a.address}" : {
+      "balance": "1000000000000000000000000000"
+    },
+  %{endfor~}
+  EOT
+
+  consensus_extra_data = {
+    "ibft" = "${quorum_bootstrap_istanbul_extradata.this.extradata}"
+    "clique" = "${local.clique_extra_data}"
+    "raft"   = "0x0000000000000000000000000000000000000000000000000000000000000000"
+  }
+
+  consensus_genesis_config = {
+    "ibft" = <<-EOT
+     "istanbul": {
+        "epoch": 30000,
+        "policy": 0,
+        "ceil2Nby3Block": 0
+      },
+    EOT
+    "clique" = <<-EOT
+     "clique": {
+        "epoch": 30000,
+        "period": ${var.blockPeriod}
+      },
+    EOT
+    "raft"   = ""
+  }
+
+}
+
 resource "local_file" "genesis-file" {
   filename = format("%s/genesis.json", quorum_bootstrap_network.this.network_dir_abs)
   content  = <<-EOF
 {
-    "alloc": {},
+    "alloc": {
+      ${substr(local.accounts_alloc, 0, length(local.accounts_alloc) - 2)}
+    },
     "coinbase": "0x0000000000000000000000000000000000000000",
     "config": {
       "homesteadBlock": 0,
@@ -64,18 +102,15 @@ resource "local_file" "genesis-file" {
       "eip155Block": 0,
       "eip150Hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
       "eip158Block": 0,
+%{if var.is_quorum == true~}
       "isQuorum": true,
-%{if var.consensus == "ibft"~}
-      "istanbul": {
-        "epoch": 30000,
-        "policy": 0,
-        "ceil2Nby3Block": 0
-      },
 %{endif~}
+      ${lookup(local.consensus_genesis_config, var.consensus, "" )}
       "maxCodeSize": 50
     },
     "difficulty": "${var.consensus == "ibft" ? "0x1" : "0x0"}",
-    "extraData": "${var.consensus == "ibft" ? quorum_bootstrap_istanbul_extradata.this.extradata : "0x0000000000000000000000000000000000000000000000000000000000000000"}",
+    "extraData": "${lookup(local.consensus_extra_data, var.consensus, "0x0000000000000000000000000000000000000000000000000000000000000000")}",
+
     "gasLimit": "${var.gasLimit}",
     "mixhash": "${var.consensus == "ibft" ? data.quorum_bootstrap_genesis_mixhash.this.istanbul : "0x00000000000000000000000000000000000000647572616c65787365646c6578"}",
     "nonce": "0x0",

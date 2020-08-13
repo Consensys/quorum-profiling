@@ -12,8 +12,12 @@ aws_vpc_id = "<aws-vpc-id>"
 
 // consensus and block period
 blockPeriod = 250
-// consensus - raft or ibft
+// consensus - raft or ibft or clique
 consensus = "raft"
+// flag to enable/disable tessera
+enable_tessera = true
+// flag that indicates upstream geth or quorum geth
+is_quorum = false
 
 // txpool.accountslots/gloablslots/globalqueue size at geth commandline for all nodes
 txpoolSize = 50000
@@ -29,6 +33,8 @@ jmeter_docker_image = "quorumengineering/jmeter:5.2.1"
 
 // jmeter test profile type you want to run
 jmeter_test_profile = "4node/deploy-contract-public"
+
+enable_tessera = false
 
 // gas limit of the block and min/max at geth commandline for all nodes
 gasLimit = 37500000
