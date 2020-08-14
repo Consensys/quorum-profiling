@@ -3,41 +3,47 @@
  
  To choose correct Jmeter test profile refer to section _Test profiles_ [here](../jmeter-test)
  
- ### Prerequisites to run the test
- For running the tests the tool expects `host_acct.csv` and `network.properties` files to be present in `quorum-profiling/scripts` directory. Sample `host_acct.csv` can be found [here](../jmeter-test/host_acct.sample.csv). Sample `network.properties` can be found [here](../jmeter-test/sample-network.properties)
+## Prerequisites to run the test
+  Refer [this](../README.md#prerequisites-for-executing) for all prerequisites.
  
- Modify the sample files as necessary and copy these files to `quorum-profiling/scripts` before starting the test.
- 
- ### To start test
+## To start test
 `cd quorum-profiling/scripts`
 
  `./start-test.sh --testProfile <jmeter-test-profile> --consensus <ibft|raft> --endpoint <quorum-rpc-endpoint> --basedir <repo base dir>`
  
  example: `./start-test.sh --testProfile "4node/deploy-contract-public" --consensus "ibft" --endpoint "http://host.docker.internal:22000" --basedir ~/go/src/github.com/jpmorganchase/quorum-profiling`
  
- This brings up `influxdb`, `grafana`, `telegraf`, Jmeter test` and `tps-monitor` containers. 
+ This brings up `influxdb`, `grafana`, `telegraf`, `Jmeter test` and `tps-monitor` containers. 
  
- ### Grafana dashboard 
+## Grafana dashboard 
   It can be accessed at `http://localhost:3000/login`. Enter `admin/admin` as user id and password to access the predefined dashboards `Quorum Profiling Dashboard` & `Quorum Profiling Jmeter Dashboard`. Sample dashboard are shown below.
  
- ### Influxdb 
+## Influxdb 
   It can be access at `http://localhost:8086/`. The database name is `telegraf` and user/password is `telegraf/test123`
   > if you wish to change the port, default user id/password, please edit the [telegraf.conf](telegraf/telegraf.conf) file
  
- ### Prometheus metrics  
+ 
+ **Note!!!** The endpoint for influxdb instance can be configured by setting up the `influxdburl` in the properties file as shown below.
+   
+   ```
+  #to write jmeter test summary to influxdb
+  influxdburl=http://host.docker.internal:8086/write?db=telegraf
+  ```
+
+## Prometheus metrics  
   * Quorum node cpu/memory usage metrics can be accessed at `http://localhost:9126/metrics`.
   * TPS metrics can be accessed at `http://localhost:2112/metrics`.
   > if you wish to change the port for `prometheus`, please edit the [telegraf.conf](telegraf/telegraf.conf) file
  
- ### To Stop Test
+## To Stop Test
  
- `cd quorum-profiling/scripts`
+> `cd quorum-profiling/scripts`
+
+> grep for `jmeter` docker container and stop it.
  
- grep for `jmeter` docker container and stop it.
+> grep for  `tpsmonitor` docker container and stop it.
  
- grep for  `tpsmonitor` docker container and stop it.
- 
- run `docker-compose down` . It will stop `grafana`, `telegraf` and `influxdb`
+> run `docker-compose down` . It will stop `grafana`, `telegraf` and `influxdb`
      
   
    

@@ -1,4 +1,4 @@
- ## Usage
+# Usage
 
  * `deploy-contract-public.jmx` test plan fire transactions to deploy new contracts to the network via `json-rpc` requests. The contract being deployed is a `SimpleStorage` contract, with a random value being initialised in the constructor.  
    

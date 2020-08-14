@@ -24,28 +24,25 @@ Private transactions have only one participants in `privateFor` by default.
  |7| `custom/deploy-contract-public` | create simpleStorage public contract (with constructor - initialised to random number)| creates specified no of threads and each thread will work on one of the nodes specified in the `.csv` input file. |
  |8| `custom/deploy-contract-private` | create simpleStorage private contract (with constructor - initialised to random number)| same as profile `7` |
  |9| `custom/deploy-mixed-contract` | create simpleStorage private & public contract (with constructor - initialised to random number)| creates specified no of thread pairs and each thread pair will work on one of the nodes specified in the `.csv` input file sending private and public transactions concurrently.  |
+
+## Prerequisites
+Refer [this](../README.md#prerequisites-for-executing) for all prerequisites. 
  
- 
+## Executing tests
  For further details of the the profiles and how these can be executed, please refer to:
  
  * profiles for executing the stress test from single node, refer [here](1node/)
  * profiles for executing the stress test from four nodes in the network, refer [here](4node/)
  * If you want to customize and execute the stress test from any number of nodes in the network, refer [here](custom/)
  
- 
- 
- ### Publish jmeter test results
- 
- All jmeter test profiles have a backend listener which can be configured so that test results would be published to an `influxdb` instance. However, this listener is enabled by default. 
- In order to disable this feature please follow the below steps:
 
- * Disable this listener by replacing the below line in the test plan jmx files
+## Publish jmeter test results
+ All jmeter test profiles have a backend listener which can be configured so that test results would be published to an `influxdb` instance. as given in input
+ 
+  
+## Disabling `influxDB` 
+ In order to run tests without metrics being pushed to `influxDB`, disable the listener by replacing the below line in the test plan jmx files
  
 ``<BackendListener guiclass="BackendListenerGui" testclass="BackendListener" testname="Backend Listener" enabled="false">``
 
- **Note!!!** The endpoint for influxdb instance can be configured by setting up the `influxdburl` in the properties file as shown below.
  
- ```
-#to write jmeter test summary to influxdb
-influxdburl=http://host.docker.internal:8086/write?db=telegraf
-```

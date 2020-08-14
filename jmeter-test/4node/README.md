@@ -1,4 +1,4 @@
- ## Usage
+# Usage
 
  * `deploy-contract-public-4node.jmx` fire transactions to deploy new contracts to all 4 nodes in the network in parallel via `json-rpc` requests. The contract being deployed is a `SimpleStorage` contract, with a random value being initialised in the constructor.  
    

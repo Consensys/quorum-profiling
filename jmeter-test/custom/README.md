@@ -1,4 +1,4 @@
- ## Usage
+# Usage
  
  The test plans in this directory can be used when user wants to run it on a custom network (a bigger network than a 4-node network).  
  
