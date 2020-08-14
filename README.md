@@ -16,14 +16,14 @@ Refer [measuring TPS in Quorum](tps-monitor/) for more details on how to use it.
 The tool can be used for development purpose as well to execute tests on local Quorum network. Refer [running locally](scripts/) for more details on how to use it.
 
 ## Prerequisites for test execution
-The prequsires for each of the above scenario is as listed below:
+The prerequisites for each of the above scenario is as listed below:
 * **Scenario 1:**
 > * Terraform runtime - Can be downloaded from [HashiCorp website](https://www.terraform.io/downloads.html). For MacOS use `brew install terraform`
 > * terraform-provider-quorum plugin `terraform-provider-quorum_v0.1.0`: You can build it from [here](https://github.com/jpmorganchase/terraform-provider-quorum) and place under `stresstest-aws/.terraform/plugins/darwin_amd64` 
 
 * **Scenario 2:**
 > * `Jmeter`: `Jmeter` installed on the machine from where the test scripts are being executed. If you using MacOS use `brew install jmeter`. For other OS, please refer [this](https://jmeter.apache.org/download_jmeter.cgi) for further details
-> * `influxDB`: This is required for pushing the test execution metrics. Refer [this](https://docs.influxdata.com/influxdb/v1.8/introduction/install/) for further detauils on `influxDB` installation. Its possible to run the tests without `influxdb`. Refer [this](jmeter-test/README.md#disabling-influxdb) for details.
+> * `influxDB`: This is required for pushing the test execution metrics. Refer [this](https://docs.influxdata.com/influxdb/v1.8/introduction/install/) for further details on `influxDB` installation. Its possible to run the tests without `influxdb`. Refer [this](jmeter-test/README.md#disabling-influxdb) for details.
 > * A running Quorum network on which the tests to be executed
 
 * **Scenario 3:**

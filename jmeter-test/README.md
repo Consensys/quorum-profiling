@@ -37,7 +37,7 @@ Refer [this](../README.md#prerequisites-for-executing) for all prerequisites.
  
 
 ## Publish jmeter test results
- All jmeter test profiles have a backend listener which can be configured so that test results would be published to an `influxdb` instance. as given in input
+ All jmeter test profiles have a backend listener which can be configured so that test results would be published to an `influxdb` instance as given in input.
  
   
 ## Disabling `influxDB` 

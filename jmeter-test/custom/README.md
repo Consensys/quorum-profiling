@@ -15,13 +15,24 @@
 And to execute tests  
 
 ```shell script
+#!/bin/bash
+#without infuxdb
 jmeter -n -t deploy-contract-public-custom.jmx -Jthreads=2 -Jseconds=60
+
+#with infuxdb
+jmeter -n -t deploy-contract-public-custom.jmx -Jinfluxdburl=http://localhost:8086/write?db=telegraf -Jthreads=2 -Jseconds=60
+
 ```
 
 The test will look for default `vars.csv` file. However a custom filename can be used  
 
 ```shell script
+#!/bin/bash
+#without infuxdb
 jmeter -n -t deploy-contract-private-custom.jmx -JvarsFile=someotherfile.csv -Jthreads=2 -Jseconds=60
+
+#with infuxdb
+jmeter -n -t deploy-contract-private-custom.jmx -JvarsFile=someotherfile.csv -Jinfluxdburl=http://localhost:8086/write?db=telegraf -Jthreads=2 -Jseconds=60
 ```
 
 __Note__
@@ -38,4 +49,6 @@ __Note__
  
  * `throughput` can be used to throttle the throughput of both types of contracts in mixed public/private contracts scenario. `throughput.public` and `throughput.private` can be used to control number of transactions sent for each type of contract.
     i.e. If you want to limit the number of public contracts deployed to 100 per second and leave the private transactions being fired as fast as possible you can specify `-Jthroughput.public=6000` (note the unit is per minute)
+
+ * `influxdburl` : influxdb url for capturing metrics. Refer [here](../README.md#Disabling-influxDB) on how to disable influxdb. 
 

@@ -7,7 +7,8 @@
      * `seconds` : Duration of the test run in seconds  
      * `delay` : Startup delay (default to 5 seconds)  
      * `throughput` : (value is transactions **per minute**). Only specify this if you want to throttle the throughput so transactions can be sent slower 
-       
+     * `influxdburl` : influxdb url for capturing metrics. Refer [here](../README.md#Disabling-influxDB) on how to disable influxdb. 
+   
    and
    
      * `url$i` : The RPC endpoint url  
@@ -18,12 +19,23 @@
         
    Sample usage
     ```shell script
+   #!/bin/bash
+   #without influxdb
     jmeter -n -t deploy-contract-public-4node.jmx 
          -Jurl1=localhost -Jport1=22000 -Jfrom1=0xed9d02e382b34818e88b88a309c7fe71e65f419d 
          -Jurl2=localhost -Jport2=22001 -Jfrom2=0x4204266650c946a56da82dfded6029cd8b1b54cf
          -Jurl3=localhost -Jport3=22002 -Jfrom3=0xca40127ac0880f44bca898fd357557b70a2fcc42
          -Jurl4=localhost -Jport4=22003 -Jfrom4=0x53a52871988c3b3856280181105d0541d78b38ac
          -Jthreads=1 -Jseconds=60
+   
+   #with influxdb
+       jmeter -n -t deploy-contract-public-4node.jmx 
+            -Jinfluxdburl=http://localhost:8086/write?db=telegraf
+            -Jurl1=localhost -Jport1=22000 -Jfrom1=0xed9d02e382b34818e88b88a309c7fe71e65f419d 
+            -Jurl2=localhost -Jport2=22001 -Jfrom2=0x4204266650c946a56da82dfded6029cd8b1b54cf
+            -Jurl3=localhost -Jport3=22002 -Jfrom3=0xca40127ac0880f44bca898fd357557b70a2fcc42
+            -Jurl4=localhost -Jport4=22003 -Jfrom4=0x53a52871988c3b3856280181105d0541d78b38ac
+            -Jthreads=1 -Jseconds=60
     ```
    
    
@@ -36,7 +48,18 @@
     
     Sample usage
     ```shell script
+     #!/bin/bash
+     #without influxdb
      jmeter -n -t deploy-contract-private-4node.jmx 
+          -Jurl1=localhost -Jport1=22000 -Jfrom1=0xed9d02e382b34818e88b88a309c7fe71e65f419d -JprivateFor1=\"BULeR8JyUWhiuuCMU/HLA0Q5pzkYT+cHII3ZKBey3Bo=\"
+          -Jurl2=localhost -Jport2=22001 -Jfrom2=0x4204266650c946a56da82dfded6029cd8b1b54cf -JprivateFor2=\"QfeDAys9MPDs2XHExtc84jKGHxZg/aj52DTh0vtA3Xc=\"
+          -Jurl3=localhost -Jport3=22002 -Jfrom3=0xca40127ac0880f44bca898fd357557b70a2fcc42 -JprivateFor3=\"1iTZde/ndBHvzhcl7V68x44Vx7pl8nwx9LqnM/AfJUg=\"
+          -Jurl4=localhost -Jport4=22003 -Jfrom4=0x53a52871988c3b3856280181105d0541d78b38ac -JprivateFor4=\"oNspPPgszVUFw0qmGFfWwh1uxVUXgvBxleXORHj07g8=\"
+          -Jthreads=1 -Jseconds=60
+   
+     #with influxdb
+     jmeter -n -t deploy-contract-private-4node.jmx 
+          -Jinfluxdburl=http://localhost:8086/write?db=telegraf
           -Jurl1=localhost -Jport1=22000 -Jfrom1=0xed9d02e382b34818e88b88a309c7fe71e65f419d -JprivateFor1=\"BULeR8JyUWhiuuCMU/HLA0Q5pzkYT+cHII3ZKBey3Bo=\"
           -Jurl2=localhost -Jport2=22001 -Jfrom2=0x4204266650c946a56da82dfded6029cd8b1b54cf -JprivateFor2=\"QfeDAys9MPDs2XHExtc84jKGHxZg/aj52DTh0vtA3Xc=\"
           -Jurl3=localhost -Jport3=22002 -Jfrom3=0xca40127ac0880f44bca898fd357557b70a2fcc42 -JprivateFor3=\"1iTZde/ndBHvzhcl7V68x44Vx7pl8nwx9LqnM/AfJUg=\"
@@ -50,8 +73,18 @@
 **Note**: `threads$i` parameter can also be used to customized the number of threads used for a spefic node - or to disable sending transactions for that particular node
 
 Example
-```
-jmeter -n -t deploy-contract-public-4node.jmx 
+ ```shell script
+    #!/bin/bash
+    #without influxdb
+    jmeter -n -t deploy-contract-public-4node.jmx 
+    -Jurl1=localhost -Jport1=22000 -Jfrom1=0xed9d02e382b34818e88b88a309c7fe71e65f419d 
+    -Jurl2=localhost -Jport2=22001 -Jfrom2=0x4204266650c946a56da82dfded6029cd8b1b54cf
+    -Jthreads=1 -Jseconds=60
+    -Jthreads3=0 -Jthreads4=0
+
+    #with influxdb
+    jmeter -n -t deploy-contract-public-4node.jmx 
+    -Jinfluxdburl=http://localhost:8086/write?db=telegraf    
     -Jurl1=localhost -Jport1=22000 -Jfrom1=0xed9d02e382b34818e88b88a309c7fe71e65f419d 
     -Jurl2=localhost -Jport2=22001 -Jfrom2=0x4204266650c946a56da82dfded6029cd8b1b54cf
     -Jthreads=1 -Jseconds=60
@@ -89,6 +122,8 @@ port4=22003
 threads=1
 seconds=10
 delay=5
+
+influxdburl=http://localhost:8086/write?db=telegraf
 
 ```
 
