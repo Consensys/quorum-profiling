@@ -23,7 +23,7 @@ The prerequisites for each of the above scenario is as listed below:
 
 * **Scenario 2:**
 > * `Jmeter`: `Jmeter` installed on the machine from where the test scripts are being executed. If you using MacOS use `brew install jmeter`. For other OS, please refer [here](https://jmeter.apache.org/download_jmeter.cgi) for further details
-> * `influxDB`: By default we push the metrics to influxDB. Refer [here](https://docs.influxdata.com/influxdb/v1.8/introduction/install/) for further details on `influxDB` installation. Refer here (rather than this) for  influxDB installation and [here](jmeter-test/README.md#disabling-influxdb) for instructions to run without metrics push to `influxDB`. 
+> * `influxDB`: By default we push the metrics to influxDB. Refer [here](https://docs.influxdata.com/influxdb/v1.8/introduction/install/) for further details on `influxDB` installation and [here](jmeter-test/README.md#disabling-influxdb) for instructions to run without metrics push to `influxDB`. 
 > * A running Quorum network on which the tests to be executed
 
 * **Scenario 3:**
