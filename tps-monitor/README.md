@@ -8,6 +8,9 @@ This is a tool to monitor transactions per second, total transactions and total 
 ## !!!Note
 `tpsmonitor` has the capability to push the metrics data to a `influxdb`. It also has the capability to expose a `prometheus` end point from where the data can be pulled. Please refer to [Usage](#usage) for further details on this
 
+## Prerequisites
+ Refer to **scenario 3** [here](../README.md#prerequisites-for-test-execution) for all prerequisites.
+
 ## Building the source
 
 Building tpsmonitor requires Go (version 1.13 or later). You can install it using your favourite package manager. Once the dependencies are installed, run

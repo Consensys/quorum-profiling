@@ -15,7 +15,29 @@ Refer [measuring TPS in Quorum](tps-monitor/) for more details on how to use it.
 * **Scenario 4 - Using the tool for local testing:**
 The tool can be used for development purpose as well to execute tests on local Quorum network. Refer [running locally](scripts/) for more details on how to use it.
 
-## Metrics gathering and dashboards
+## Prerequisites for test execution
+The prerequisites for each of the above scenario is as listed below:
+* **Scenario 1:**
+> * Terraform runtime - Can be downloaded from [HashiCorp website](https://www.terraform.io/downloads.html). For MacOS use `brew install terraform`
+> * terraform-provider-quorum plugin `terraform-provider-quorum_v0.1.0`: You can build it from [here](https://github.com/jpmorganchase/terraform-provider-quorum) and place under `stresstest-aws/.terraform/plugins/darwin_amd64` 
+
+* **Scenario 2:**
+> * `Jmeter`: `Jmeter` installed on the machine from where the test scripts are being executed. If you using MacOS use `brew install jmeter`. For other OS, please refer [here](https://jmeter.apache.org/download_jmeter.cgi) for further details
+> * `influxDB`: By default we push the metrics to influxDB. Refer [here](https://docs.influxdata.com/influxdb/v1.8/introduction/install/) for further details on `influxDB` installation and [here](jmeter-test/README.md#disabling-influxdb) for instructions to run without metrics push to `influxDB`. 
+> * A running Quorum network on which the tests to be executed
+
+* **Scenario 3:**
+> * requires Go (version 1.13 or later). For MacOs use `brew install go`
+> * A running Quorum network for monitoring the TPS
+
+* **Scenario 4:**
+> * `docker`: for installing `docker`, refer [here](https://docs.docker.com/desktop/#download-and-install) 
+> * For running the tests the tool expects `host_acct.csv` and `network.properties` files to be present in `quorum-profiling/scripts` directory. Sample `host_acct.csv` can be found [here](jmeter-test/host_acct.sample.csv). Sample `network.properties` can be found [here](jmeter-test/sample-network.properties)
+     Modify the sample files as necessary and copy these files to `quorum-profiling/scripts` before starting the test.
+> * A running Quorum network for monitoring
+
+
+## Metrics gathering and visualization
 The tool executes the stress test profile selected and then collects the following metrics:
  * CPU/memory usage metrics of `geth` & `tessera` docker containers from all the nodes in the network (using `telegraf`)
  * TPS, total transactions count and total block count metrics from all nodes in the network
@@ -31,3 +53,4 @@ The tool executes the stress test profile selected and then collects the followi
  ### Sample JMeter Dashboard
   
  ![Jmeter Dashboard](images/jmeterDashboard.jpeg) 
+

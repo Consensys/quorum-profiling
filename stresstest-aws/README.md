@@ -1,5 +1,5 @@
 
- # Test Quorum in AWS
+# Test Quorum in AWS
  This tool spins up a Quorum network based on the inputs given in `setting.tfvars` using `terraform` in AWS and automatically executes the `Jmeter` stress test profile as specified in the config. 
  
  The below diagram explains the overall architecture of the stress test environment that the tool will bring up:
@@ -9,23 +9,22 @@
  
  Further, CPU/memory usage of first node (`node0`) and TPS metrics are pushed to AWS metrics. These metrics can be viewed under AWS `cloudwatch > custom namespaces` with namespace `<network_name>-<pulbicIp Of node0>`. The metrics names are self-explanatory.
  
- ## Grafana dashboard 
+## Grafana dashboard 
  The dashboard can be accessed at `http://<testNode url>:3000/login`. Enter `admin/admin`  as user id and password to access the predefined dashboards `Quorum Profiling Dashboard` & `Quorum Profiling Jmeter Dashboard`. The sample dashboards are as shown below:
 
- ## Influxdb 
+## Influxdb 
  It can be access at `http://<testnode url>:8086/`. The database name is  `telegraf` and user/password is `telegraf/test123`.
 
- ## Prometheus metrics  
+## Prometheus metrics  
  * Quorum node cpu/memory usage metrics can be accessed at `http://<node url>:9126/metrics`.
  * TPS metrics can be accessed at `http://<testnode url>:2112/metrics`.
  
 
- ## Prerequisites
- * Terraform runtime - Can be downloaded from [HashiCorp website](https://www.terraform.io/downloads.html). For MacOS use `brew install terraform`
- * terraform-provider-quorum plugin `terraform-provider-quorum_v0.1.0`: You can build it from [here](https://github.com/jpmorganchase/terraform-provider-quorum) and place under `stresstest-aws/.terraform/plugins/darwin_amd64` 
+## Prerequisites
+ Refer to **scenario 1** [here](../README.md#prerequisites-for-test-execution) for all prerequisites.
  
 
- ## Configuration details (settings.tfvars)
+## Configuration details (settings.tfvars)
  - `aws_profile` = aws profile name
  - `aws_region` = aws region
  - `aws_network_name` = network name prefix. All aws resource names of this network is prefixed with this name.
@@ -50,7 +49,7 @@
  - `jmeter_throughput` = specifies the number of transactions to be sent to Quorum per minute by jmeter. This is used to throttle the input. It is used by `1node` and `4node` test profiles.
  - `jmeter_private_throughput` = specifies the number of private transactions to be sent to Quorum per minute by jmeter. This is used to throttle the input. It is used by `custom/mixed` test profile described below.
  - `jmeter_public_throughput` = specifies the number of public transactions to be sent to Quorum per minute by jmeter. This is used to throttle the input. It is used by `custom/mixed` test profile described below.
- ### Sample config:
+### Sample config:
  ```
 aws_profile = "default"
 aws_region = "ap-southeast-1"
