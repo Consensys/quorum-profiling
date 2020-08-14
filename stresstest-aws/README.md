@@ -21,7 +21,7 @@
  
 
 ## Prerequisites
- Refer [this](../README.md#prerequisites-for-executing) for all prerequisites.
+ Refer to **scenario 1** [here](../README.md#prerequisites-for-test-execution) for all prerequisites.
  
 
 ## Configuration details (settings.tfvars)

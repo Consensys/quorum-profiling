@@ -4,7 +4,7 @@
  To choose correct Jmeter test profile refer to section _Test profiles_ [here](../jmeter-test)
  
 ## Prerequisites to run the test
-  Refer [this](../README.md#prerequisites-for-executing) for all prerequisites.
+  Refer to **scenario 4** [here](../README.md#prerequisites-for-test-execution) for all prerequisites.
  
 ## To start test
 `cd quorum-profiling/scripts`

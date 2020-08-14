@@ -54,6 +54,3 @@ The tool executes the stress test profile selected and then collects the followi
   
  ![Jmeter Dashboard](images/jmeterDashboard.jpeg) 
 
-
-* Terraform runtime - Can be downloaded from [HashiCorp website](https://www.terraform.io/downloads.html). For MacOS use `brew install terraform`
- * terraform-provider-quorum plugin `terraform-provider-quorum_v0.1.0`: You can build it from [here](https://github.com/jpmorganchase/terraform-provider-quorum) and place under `stresstest-aws/.terraform/plugins/darwin_amd64` 
