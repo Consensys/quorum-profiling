@@ -32,7 +32,19 @@ Private transactions have only one participants in `privateFor` by default.
  * profiles for executing the stress test from four nodes in the network, refer [here](4node/)
  * If you want to customize and execute the stress test from any number of nodes in the network, refer [here](custom/)
  
- **Note!!!** When executing `Jmeter` tests, the `Jmeter` test executiuon summary can be stored in an `influxdb`. This can be achieved by setting up the `influxdburl` in the properties file as shown below.
+ 
+ 
+ ### Publish jmeter test results
+ 
+ All jmeter test profiles have a backend listener which can be configured so that test results would be published to an `influxdb` instance. However, this listener is enabled by default. 
+ In order to disable this feature please follow the below steps:
+
+ * Disable this listener by replacing the below line in the test plan jmx files
+ 
+``<BackendListener guiclass="BackendListenerGui" testclass="BackendListener" testname="Backend Listener" enabled="false">``
+
+ **Note!!!** The endpoint for influxdb instance can be configured by setting up the `influxdburl` in the properties file as shown below.
+ 
  ```
 #to write jmeter test summary to influxdb
 influxdburl=http://host.docker.internal:8086/write?db=telegraf

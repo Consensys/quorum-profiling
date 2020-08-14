@@ -190,7 +190,7 @@
             <boolProp name="resetInterpreter">false</boolProp>
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>
-            <stringProp name="script">import org.apache.jmeter.util.JMeterUtils; 
+            <stringProp name="script">import org.apache.jmeter.util.JMeterUtils;
 import org.apache.commons.lang3;
 
 int random = Integer.parseInt(vars.get(&quot;random&quot;));
