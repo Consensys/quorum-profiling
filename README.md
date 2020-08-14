@@ -22,8 +22,8 @@ The prerequisites for each of the above scenario is as listed below:
 > * terraform-provider-quorum plugin `terraform-provider-quorum_v0.1.0`: You can build it from [here](https://github.com/jpmorganchase/terraform-provider-quorum) and place under `stresstest-aws/.terraform/plugins/darwin_amd64` 
 
 * **Scenario 2:**
-> * `Jmeter`: `Jmeter` installed on the machine from where the test scripts are being executed. If you using MacOS use `brew install jmeter`. For other OS, please refer [this](https://jmeter.apache.org/download_jmeter.cgi) for further details
-> * `influxDB`: This is required for pushing the test execution metrics. Refer [this](https://docs.influxdata.com/influxdb/v1.8/introduction/install/) for further details on `influxDB` installation. Its possible to run the tests without `influxdb`. Refer [this](jmeter-test/README.md#disabling-influxdb) for details.
+> * `Jmeter`: `Jmeter` installed on the machine from where the test scripts are being executed. If you using MacOS use `brew install jmeter`. For other OS, please refer [here](https://jmeter.apache.org/download_jmeter.cgi) for further details
+> * `influxDB`: By default we push the metrics to influxDB. Refer [here](https://docs.influxdata.com/influxdb/v1.8/introduction/install/) for further details on `influxDB` installation. Refer here (rather than this) for  influxDB installation and [here](jmeter-test/README.md#disabling-influxdb) for instructions to run without metrics push to `influxDB`. 
 > * A running Quorum network on which the tests to be executed
 
 * **Scenario 3:**
@@ -31,7 +31,7 @@ The prerequisites for each of the above scenario is as listed below:
 > * A running Quorum network for monitoring the TPS
 
 * **Scenario 4:**
-> * `docker`: for installing `docker`, refer [this](https://docs.docker.com/desktop/#download-and-install) 
+> * `docker`: for installing `docker`, refer [here](https://docs.docker.com/desktop/#download-and-install) 
 > * For running the tests the tool expects `host_acct.csv` and `network.properties` files to be present in `quorum-profiling/scripts` directory. Sample `host_acct.csv` can be found [here](jmeter-test/host_acct.sample.csv). Sample `network.properties` can be found [here](jmeter-test/sample-network.properties)
      Modify the sample files as necessary and copy these files to `quorum-profiling/scripts` before starting the test.
 > * A running Quorum network for monitoring

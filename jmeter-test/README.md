@@ -26,7 +26,7 @@ Private transactions have only one participants in `privateFor` by default.
  |9| `custom/deploy-mixed-contract` | create simpleStorage private & public contract (with constructor - initialised to random number)| creates specified no of thread pairs and each thread pair will work on one of the nodes specified in the `.csv` input file sending private and public transactions concurrently.  |
 
 ## Prerequisites
-Refer to **scenario 2** [here](../README.md#prerequisites-for-executing) for all prerequisites. 
+Refer to **scenario 2** [here](../README.md#prerequisites-for-test-execution) for all prerequisites. 
  
 ## Executing tests
  For further details of the the profiles and how these can be executed, please refer to:
