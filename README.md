@@ -46,11 +46,18 @@ The tool executes the stress test profile selected and then collects the followi
  The above metrics are pushed to `influxdb`. The tool also supports pull of the metrics data from a `prometheus` end point. The metrics can be viewed in `grafana` dashboards. Sample dashboards are as shown below:
   
 
- ### Sample Quorum Profiling dashboard
+ ### Sample Quorum 2.6.0 Profiling dashboard
  
- ![Quorum Dashboard](images/quorumDashboard.jpeg) 
+ ![Quorum Dashboard](images/quorumDashboard_260.jpeg) 
  
- ### Sample JMeter Dashboard
+ ### Sample JMeter[Quorum 2.6.0] Dashboard
   
- ![Jmeter Dashboard](images/jmeterDashboard.jpeg) 
+ ![Jmeter Dashboard](images/jmeterDashboard_260.jpeg) 
 
+### Sample Quorum 2.5.0 Profiling dashboard
+ 
+ ![Quorum Dashboard](images/quorumDashboard_250.jpeg) 
+ 
+ ### Sample JMeter[Quorum 2.5.0] Dashboard
+  
+ ![Jmeter Dashboard](images/jmeterDashboard_250.jpeg) 
