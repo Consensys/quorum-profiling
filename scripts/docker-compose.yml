@@ -20,7 +20,7 @@ services:
       - influxdb
 
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:7.2.0
     container_name: grafana
     restart: unless-stopped
     ports:
@@ -37,7 +37,7 @@ services:
       - influxdb
 
   influxdb:
-    image: influxdb
+    image: influxdb:1.8.2
     container_name: influxdb
     restart: unless-stopped
     ports:
