@@ -1195,7 +1195,7 @@ String data = &quot;0xa9059cbb000000000000000000000000&quot;;
 String addr = &quot;ed9d02e382b34818e88b88a309c7fe71e65f419e&quot;;
 String addr2 = addr.substring(0, addr.length()-randomInHex.length()) + randomInHex;
 data += addr2.substring(0, addr.length()); // random address
-data += &quot;0000000000000000000000000000000000000000000000000000000000000001&quot;; // send 1 token
+data += &quot;0000000000000000000000000000000000000000000000000000000000000001&quot;; // send minimal amount of ERC token (10^-18)
 vars.put(&quot;data&quot;,data);
 </stringProp>
           </BeanShellPreProcessor>
