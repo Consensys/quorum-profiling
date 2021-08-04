@@ -986,7 +986,7 @@ int random = Integer.parseInt(vars.get(&quot;random&quot;));
 String randomInHex = Integer.toHexString(random);
 
 String data = &quot;0xf242432a000000000000000000000000&quot;;
-data += from1;
+data += from.substring(2);
 data += &quot;000000000000000000000000&quot;;
 String addr = &quot;ed9d02e382b34818e88b88a309c7fe71e65f419e&quot;;
 String addr2 = addr.substring(0, addr.length()-randomInHex.length()) + randomInHex;
@@ -995,7 +995,7 @@ data += &quot;0000000000000000000000000000000000000000000000000000000000000001&q
 int mod = random % 5;
 data += &quot;000000000000000000000000000000000000000000000000000000000000000&quot;; // send token 1
 data += Integer.toString(mod);
-date += &quot;00000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000000&quot;;
+data += &quot;00000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000000&quot;;
 vars.put(&quot;data&quot;,data);
 </stringProp>
           </BeanShellPreProcessor>
@@ -1192,13 +1192,13 @@ vars.put(&quot;data&quot;,data);
             <stringProp name="script">import org.apache.jmeter.util.JMeterUtils;
 import org.apache.commons.lang3;
 
-String from = vars.get(&quot;from1&quot;);
+String from = vars.get(&quot;from2&quot;);
 int random = Integer.parseInt(vars.get(&quot;random&quot;));
 
 String randomInHex = Integer.toHexString(random);
 
 String data = &quot;0xf242432a000000000000000000000000&quot;;
-data += from1;
+data += from.substring(2);
 data += &quot;000000000000000000000000&quot;;
 String addr = &quot;ed9d02e382b34818e88b88a309c7fe71e65f419e&quot;;
 String addr2 = addr.substring(0, addr.length()-randomInHex.length()) + randomInHex;
@@ -1207,7 +1207,7 @@ data += &quot;0000000000000000000000000000000000000000000000000000000000000001&q
 int mod = random % 5;
 data += &quot;000000000000000000000000000000000000000000000000000000000000000&quot;; // send token 1
 data += Integer.toString(mod);
-date += &quot;00000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000000&quot;;
+data += &quot;00000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000000&quot;;
 vars.put(&quot;data&quot;,data);
 </stringProp>
           </BeanShellPreProcessor>
@@ -1404,13 +1404,13 @@ vars.put(&quot;data&quot;,data);
             <stringProp name="script">import org.apache.jmeter.util.JMeterUtils;
 import org.apache.commons.lang3;
 
-String from = vars.get(&quot;from1&quot;);
+String from = vars.get(&quot;from3&quot;);
 int random = Integer.parseInt(vars.get(&quot;random&quot;));
 
 String randomInHex = Integer.toHexString(random);
 
 String data = &quot;0xf242432a000000000000000000000000&quot;;
-data += from1;
+data += from.substring(2);
 data += &quot;000000000000000000000000&quot;;
 String addr = &quot;ed9d02e382b34818e88b88a309c7fe71e65f419e&quot;;
 String addr2 = addr.substring(0, addr.length()-randomInHex.length()) + randomInHex;
@@ -1419,7 +1419,7 @@ data += &quot;0000000000000000000000000000000000000000000000000000000000000001&q
 int mod = random % 5;
 data += &quot;000000000000000000000000000000000000000000000000000000000000000&quot;; // send token 1
 data += Integer.toString(mod);
-date += &quot;00000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000000&quot;;
+data += &quot;00000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000000&quot;;
 vars.put(&quot;data&quot;,data);
 </stringProp>
           </BeanShellPreProcessor>
@@ -1616,24 +1616,24 @@ vars.put(&quot;data&quot;,data);
             <stringProp name="script">import org.apache.jmeter.util.JMeterUtils;
 import org.apache.commons.lang3;
 
-String from = vars.get(&quot;from1&quot;);
+String from = vars.get(&quot;from4&quot;);
 int random = Integer.parseInt(vars.get(&quot;random&quot;));
 
 String randomInHex = Integer.toHexString(random);
 
 String data = &quot;0xf242432a000000000000000000000000&quot;;
-data += from1;
+data += from.substring(2);
 data += &quot;000000000000000000000000&quot;;
 String addr = &quot;ed9d02e382b34818e88b88a309c7fe71e65f419e&quot;;
 String addr2 = addr.substring(0, addr.length()-randomInHex.length()) + randomInHex;
 data += addr2.substring(0, addr.length()); // random address
 data += &quot;0000000000000000000000000000000000000000000000000000000000000001&quot;; // send 1 token
 int mod = random % 5;
-data += &quot;000000000000000000000000000000000000000000000000000000000000000&quot;; // send token 1
+data += &quot;000000000000000000000000000000000000000000000000000000000000000&quot;; // send token between 0 and 4
 data += Integer.toString(mod);
-date += &quot;00000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000000&quot;;
-vars.put(&quot;data&quot;,data);
-</stringProp>
+data += &quot;00000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000000&quot;;
+System.out.println(&quot;data=&quot;+data);
+vars.put(&quot;data&quot;,data);</stringProp>
           </BeanShellPreProcessor>
           <hashTree/>
           <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Variables" enabled="true">
