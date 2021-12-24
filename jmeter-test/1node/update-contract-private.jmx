@@ -32,7 +32,7 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;eth_sendTransaction&quot;, &quot;params&quot;:[{&quot;from&quot;: &quot;${from}&quot;, &quot;gas&quot;: &quot;0x249F0&quot;, &quot;data&quot;: ${data}, &quot;privateFor&quot;: [${privateFor}]}], &quot;id&quot;: 1}</stringProp>
+                <stringProp name="Argument.value">{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;eth_sendTransaction&quot;, &quot;params&quot;:[{&quot;from&quot;: &quot;${from}&quot;, &quot;gas&quot;: &quot;0x249F0&quot;, &quot;data&quot;: ${data}, &quot;privateFor&quot;: [${privateFor}], &quot;chainId&quot;:1337}], &quot;id&quot;: 1}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -200,7 +200,7 @@ props.put(&quot;to&quot;, contractAddress);</stringProp>
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;eth_sendTransaction&quot;, &quot;params&quot;:[{&quot;from&quot;: &quot;${from}&quot;, &quot;to&quot;: ${__property(to)}, &quot;gas&quot;: &quot;0x249F0&quot;, &quot;data&quot;: ${data}, &quot;privateFor&quot;: [${privateFor}]}], &quot;id&quot;: ${id}}</stringProp>
+                <stringProp name="Argument.value">{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;eth_sendTransaction&quot;, &quot;params&quot;:[{&quot;from&quot;: &quot;${from}&quot;, &quot;to&quot;: ${__property(to)}, &quot;gas&quot;: &quot;0x249F0&quot;, &quot;data&quot;: ${data}, &quot;privateFor&quot;: [${privateFor}], &quot;chainId&quot;:1337}], &quot;id&quot;: ${id}}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>

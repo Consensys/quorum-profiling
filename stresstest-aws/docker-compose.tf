@@ -45,28 +45,28 @@ x-quorum-def:
         --nodekeyhex $$NODEKEY_HEX \
         --miner.gastarget ${var.gasLimit} \
         --miner.gaslimit ${var.gasLimit} \
-        --rpc \
-        --rpccorsdomain=* \
-        --rpcvhosts=* \
-        --rpcaddr 0.0.0.0 \
-        --rpcport ${local.container_rpc_port} \
-        --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,${var.consensus == "raft" ? "raft" : "istanbul"} \
+        --http \
+        --http.corsdomain=* \
+        --http.vhosts=* \
+        --http.addr 0.0.0.0 \
+        --http.port ${local.container_rpc_port} \
+        --http.api admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,${var.consensus == "raft" ? "raft" : "istanbul"} \
         --ws \
-        --wsorigins=* \
-        --wsaddr 0.0.0.0 \
-        --wsport ${local.container_ws_port} \
-        --wsapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,${var.consensus == "raft" ? "raft" : "istanbul"} \
+        --ws.origins=* \
+        --ws.addr 0.0.0.0 \
+        --ws.port ${local.container_ws_port} \
+        --ws.api admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,${var.consensus == "raft" ? "raft" : "istanbul"} \
         --metrics --metrics.expensive --metrics.influxdb --metrics.influxdb.endpoint "http://${aws_instance.wrk.private_ip}:8086" --metrics.influxdb.username "telegraf" --metrics.influxdb.password "test123" --metrics.influxdb.database "telegraf" --metrics.influxdb.tags "node=${format("node-%d", count.index)}" \
         --port ${local.container_p2p_port} \
 %{if var.consensus == "ibft"~}
         --istanbul.blockperiod ${var.blockPeriod > 10 ? 1 : var.blockPeriod} \
         --mine \
-        --minerthreads 1 \
+        --miner.threads 1 \
         --syncmode full \
 %{endif~}
 %{if var.consensus == "clique"~}
         --mine \
-        --minerthreads 1 \
+        --miner.threads 1 \
         --syncmode full \
 %{endif~}
 %{if var.consensus == "raft"~}

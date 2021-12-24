@@ -32,7 +32,7 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;eth_sendTransaction&quot;, &quot;params&quot;:[{&quot;from&quot;: &quot;${from1}&quot;, &quot;gas&quot;: &quot;0x47b760&quot;, &quot;data&quot;: ${data}}], &quot;id&quot;: ${id}}</stringProp>
+                <stringProp name="Argument.value">{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;eth_sendTransaction&quot;, &quot;params&quot;:[{&quot;from&quot;: &quot;${from1}&quot;, &quot;gas&quot;: &quot;0x47b760&quot;, &quot;data&quot;: ${data}, &quot;chainId&quot;:1337}], &quot;id&quot;: ${id}}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -177,7 +177,7 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;eth_sendTransaction&quot;, &quot;params&quot;:[{&quot;from&quot;: &quot;${from2}&quot;, &quot;gas&quot;: &quot;0x47b760&quot;, &quot;data&quot;: ${data}}], &quot;id&quot;: ${id}}</stringProp>
+                <stringProp name="Argument.value">{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;eth_sendTransaction&quot;, &quot;params&quot;:[{&quot;from&quot;: &quot;${from2}&quot;, &quot;gas&quot;: &quot;0x47b760&quot;, &quot;data&quot;: ${data}, &quot;chainId&quot;:1337}}], &quot;id&quot;: ${id}}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -322,7 +322,7 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;eth_sendTransaction&quot;, &quot;params&quot;:[{&quot;from&quot;: &quot;${from3}&quot;, &quot;gas&quot;: &quot;0x47b760&quot;, &quot;data&quot;: ${data}}], &quot;id&quot;: ${id}}</stringProp>
+                <stringProp name="Argument.value">{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;eth_sendTransaction&quot;, &quot;params&quot;:[{&quot;from&quot;: &quot;${from3}&quot;, &quot;gas&quot;: &quot;0x47b760&quot;, &quot;data&quot;: ${data}, &quot;chainId&quot;:1337}}], &quot;id&quot;: ${id}}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -467,7 +467,7 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;eth_sendTransaction&quot;, &quot;params&quot;:[{&quot;from&quot;: &quot;${from4}&quot;, &quot;gas&quot;: &quot;0x249F0&quot;, &quot;data&quot;: ${data}}], &quot;id&quot;: ${id}}</stringProp>
+                <stringProp name="Argument.value">{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;eth_sendTransaction&quot;, &quot;params&quot;:[{&quot;from&quot;: &quot;${from4}&quot;, &quot;gas&quot;: &quot;0x249F0&quot;, &quot;data&quot;: ${data}, &quot;chainId&quot;:1337}}], &quot;id&quot;: ${id}}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -596,13 +596,13 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
         <collectionProp name="Arguments.arguments">
           <elementProp name="threads" elementType="Argument">
             <stringProp name="Argument.name">threads</stringProp>
-            <stringProp name="Argument.value">${__P(threads,2)}</stringProp>
+            <stringProp name="Argument.value">${__P(threads,1)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">Number of threads to fire requests</stringProp>
           </elementProp>
           <elementProp name="seconds" elementType="Argument">
             <stringProp name="Argument.name">seconds</stringProp>
-            <stringProp name="Argument.value">${__P(seconds,600)}</stringProp>
+            <stringProp name="Argument.value">${__P(seconds,1800)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">Duration of test</stringProp>
           </elementProp>
@@ -614,7 +614,7 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
           </elementProp>
           <elementProp name="throughput" elementType="Argument">
             <stringProp name="Argument.name">throughput</stringProp>
-            <stringProp name="Argument.value">${__P(throughput,100000)}</stringProp>
+            <stringProp name="Argument.value">${__P(throughput,30000)}</stringProp>
             <stringProp name="Argument.desc">Desire throughput</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>

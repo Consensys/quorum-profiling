@@ -32,7 +32,7 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;eth_sendTransaction&quot;, &quot;params&quot;:[{&quot;from&quot;: &quot;${from1}&quot;, &quot;gas&quot;: &quot;0x249F0&quot;, &quot;data&quot;: ${data}, &quot;privateFor&quot;: [${privateFor1}]}], &quot;id&quot;: ${id}}</stringProp>
+                <stringProp name="Argument.value">{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;eth_sendTransaction&quot;, &quot;params&quot;:[{&quot;from&quot;: &quot;${from1}&quot;, &quot;gas&quot;: &quot;0x249F0&quot;, &quot;data&quot;: ${data}, &quot;privateFor&quot;: [${privateFor1}], &quot;chainId&quot;:1337}], &quot;id&quot;: ${id}}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -182,7 +182,7 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;eth_sendTransaction&quot;, &quot;params&quot;:[{&quot;from&quot;: &quot;${from2}&quot;, &quot;gas&quot;: &quot;0x249F0&quot;, &quot;data&quot;: ${data}, &quot;privateFor&quot;: [${privateFor2}]}], &quot;id&quot;: ${id}}</stringProp>
+                <stringProp name="Argument.value">{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;eth_sendTransaction&quot;, &quot;params&quot;:[{&quot;from&quot;: &quot;${from2}&quot;, &quot;gas&quot;: &quot;0x249F0&quot;, &quot;data&quot;: ${data}, &quot;privateFor&quot;: [${privateFor2}], &quot;chainId&quot;:1337}], &quot;id&quot;: ${id}}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -332,7 +332,7 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;eth_sendTransaction&quot;, &quot;params&quot;:[{&quot;from&quot;: &quot;${from3}&quot;, &quot;gas&quot;: &quot;0x249F0&quot;, &quot;data&quot;: ${data}, &quot;privateFor&quot;: [${privateFor3}]}], &quot;id&quot;: ${id}}</stringProp>
+                <stringProp name="Argument.value">{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;eth_sendTransaction&quot;, &quot;params&quot;:[{&quot;from&quot;: &quot;${from3}&quot;, &quot;gas&quot;: &quot;0x249F0&quot;, &quot;data&quot;: ${data}, &quot;privateFor&quot;: [${privateFor3}], &quot;chainId&quot;:1337}], &quot;id&quot;: ${id}}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -482,7 +482,7 @@ vars.put(&quot;data&quot;,finalData);</stringProp>
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;eth_sendTransaction&quot;, &quot;params&quot;:[{&quot;from&quot;: &quot;${from4}&quot;, &quot;gas&quot;: &quot;0x249F0&quot;, &quot;data&quot;: ${data}, &quot;privateFor&quot;: [${privateFor4}]}], &quot;id&quot;: ${id}}</stringProp>
+                <stringProp name="Argument.value">{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;eth_sendTransaction&quot;, &quot;params&quot;:[{&quot;from&quot;: &quot;${from4}&quot;, &quot;gas&quot;: &quot;0x249F0&quot;, &quot;data&quot;: ${data}, &quot;privateFor&quot;: [${privateFor4}], &quot;chainId&quot;:1337}], &quot;id&quot;: ${id}}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
